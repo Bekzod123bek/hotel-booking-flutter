@@ -8,6 +8,18 @@ Flutter.
 > backend and sign-in is simulated (nothing leaves the device, passwords are
 > not stored). Photos are illustrative and do not show the listed hotels.
 
+## Screenshots
+
+| Onboarding | Explore | Hotel page | Booking | Filters |
+|---|---|---|---|---|
+| <img src="docs/screenshots/onboarding.jpg" width="180"> | <img src="docs/screenshots/home.jpg" width="180"> | <img src="docs/screenshots/details.jpg" width="180"> | <img src="docs/screenshots/booking.jpg" width="180"> | <img src="docs/screenshots/filters.jpg" width="180"> |
+
+Screenshots were taken on an Android emulator (Pixel 7).
+
+## Design
+
+Light, calm teal theme (with a dark mode switch), large photo cards with gradients, rounded Material 3 components and Hero transitions between the list and the hotel page.
+
 ## Features
 
 - **Onboarding** (3 slides, shown on first launch only)
@@ -67,3 +79,7 @@ The app needs an internet connection to load photos.
 ## Credits
 
 Photos: [Unsplash](https://unsplash.com) (Unsplash License).
+
+## Author
+
+Bekzod Abdurahimov, Flutter developer · [GitHub](https://github.com/Bekzod123bek)
