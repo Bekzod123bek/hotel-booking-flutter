@@ -7,6 +7,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../domain/entities.dart';
 import '../cubit/bookings_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 class BookingsPage extends StatelessWidget {
   const BookingsPage({super.key});
@@ -24,11 +25,19 @@ class BookingsPage extends StatelessWidget {
               message: context.l10n.noTripsMessage,
             );
           }
-          return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            itemCount: bookings.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 14),
-            itemBuilder: (_, i) => _BookingCard(booking: bookings[i]),
+          final window = context.windowSize;
+          return ReadableWidth(
+            child: GridView.builder(
+              padding: EdgeInsets.fromLTRB(window.gutter, 8, window.gutter, 24),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: window.isCompact ? 1 : 2,
+                mainAxisSpacing: 14,
+                crossAxisSpacing: 14,
+                mainAxisExtent: 290,
+              ),
+              itemCount: bookings.length,
+              itemBuilder: (_, i) => _BookingCard(booking: bookings[i]),
+            ),
           );
         },
       ),

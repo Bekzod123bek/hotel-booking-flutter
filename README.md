@@ -33,6 +33,13 @@ Light, calm teal theme (with a dark mode switch), large photo cards with gradien
 - **Filters** in a bottom sheet: price range, minimum rating, amenities, sort
 - **Hotel page**: Hero animation, photo gallery, amenities, expandable
   description, real **OpenStreetMap** map with "open in maps app", reviews
+- **Find what is near you**: "Near me" sorts the list by distance and every
+  card shows how far the hotel is; a map screen shows all hotels with their
+  price and your own position. Refusing the location permission only disables
+  the sorting, with a message explaining why
+- **Responsive**: one column and a bottom bar on a phone, a navigation rail and
+  a two or three column grid on a tablet or desktop window, with a readable
+  maximum width
 - **Booking flow**: room type, dates, guests, guest name and phone, payment
   choice (pay at the hotel, or a simulated online payment), price breakdown,
   booking code
@@ -49,7 +56,7 @@ Light, calm teal theme (with a dark mode switch), large photo cards with gradien
 - `flutter_bloc` (Cubit) for state management, `get_it` for dependency injection
 - `firebase_auth` + `cloud_firestore` (cloud mode), `shared_preferences` (demo mode)
 - `flutter_localizations` + ARB files (`lib/l10n`)
-- `flutter_map` (OpenStreetMap, no API key) + `url_launcher`
+- `flutter_map` (OpenStreetMap, no API key), `geolocator`, `url_launcher`
 - `cached_network_image` + `shimmer`
 - Clean Architecture split: `domain`, `data`, `presentation`
 
@@ -59,7 +66,7 @@ Light, calm teal theme (with a dark mode switch), large photo cards with gradien
 lib/
   main.dart                 app, theme, locale, Firebase start-up
   injection.dart            get_it setup (cloud or demo repositories)
-  core/                     theme, l10n helpers, shared widgets
+  core/                     theme, l10n helpers, breakpoints, shared widgets
   l10n/                     app_en / app_uz / app_ru .arb
   features/
     auth/                   onboarding, login, AuthCubit, Firebase + local repos

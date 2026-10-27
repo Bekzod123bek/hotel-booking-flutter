@@ -188,6 +188,59 @@ class AppLocalizationsUz extends AppLocalizations {
   String get retry => 'Qayta urinish';
 
   @override
+  String get sortNearest => 'Eng yaqin';
+
+  @override
+  String get nearMe => 'Menga yaqin';
+
+  @override
+  String get findingLocation => 'Joylashuvingiz aniqlanmoqda…';
+
+  @override
+  String distanceKm(String km) {
+    return '$km km uzoqlikda';
+  }
+
+  @override
+  String distanceM(int m) {
+    return '$m m uzoqlikda';
+  }
+
+  @override
+  String get locationDenied =>
+      'Joylashuvga ruxsat berilmadi, shuning uchun masofa bo\'yicha saralab bo\'lmaydi.';
+
+  @override
+  String get locationDeniedForever =>
+      'Joylashuv bu ilova uchun taqiqlangan. Sozlamalardan ruxsat berishingiz mumkin.';
+
+  @override
+  String get locationServiceOff => 'Qurilmada joylashuv o\'chirilgan.';
+
+  @override
+  String get locationUnavailable =>
+      'Joylashuvni aniqlab bo\'lmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get openSettings => 'Sozlamalar';
+
+  @override
+  String get mapView => 'Xarita';
+
+  @override
+  String get listView => 'Ro\'yxat';
+
+  @override
+  String get hotelsOnMap => 'Xaritadagi mehmonxonalar';
+
+  @override
+  String get youAreHere => 'Siz shu yerdasiz';
+
+  @override
+  String get sampleDataNote =>
+      'Namunaviy ma\'lumot: mehmonxonalar va ularning joylari haqiqiy emas.';
+
+  @override
   String get sortRecommended => 'Tavsiya etilgan';
 
   @override

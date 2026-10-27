@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/widgets/app_image.dart';
 import '../../domain/entities.dart';
 import '../cubit/favorites_cubit.dart';
+import '../cubit/hotels_cubit.dart';
 import '../pages/hotel_detail_page.dart';
 import '../../../../core/l10n/l10n.dart';
 
@@ -18,6 +19,13 @@ IconData amenityIcon(String amenity) => switch (amenity) {
   'Air conditioning' => Icons.ac_unit,
   _ => Icons.check_circle_outline,
 };
+
+/// "1.2 km away" once the user's position is known, otherwise `null`.
+String? hotelDistance(BuildContext context, Hotel hotel) {
+  final origin = context.select((HotelsCubit c) => c.state.origin);
+  if (origin == null) return null;
+  return distanceLabel(context.l10n, origin.distanceKmTo(hotel.position));
+}
 
 void openHotel(BuildContext context, Hotel hotel, String heroTag) {
   Navigator.of(context).push(
@@ -168,7 +176,13 @@ class HotelCard extends StatelessWidget {
                             const SizedBox(width: 2),
                             Flexible(
                               child: Text(
-                                '${hotel.city}  •  ${context.l10n.reviewsCount(hotel.reviewCount)}',
+                                [
+                                  hotel.city,
+                                  hotelDistance(context, hotel) ??
+                                      context.l10n.reviewsCount(
+                                        hotel.reviewCount,
+                                      ),
+                                ].join('  •  '),
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
@@ -330,7 +344,15 @@ class HotelTile extends StatelessWidget {
                       style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 2),
-                    Text(hotel.city, style: theme.textTheme.bodySmall),
+                    Text(
+                      [
+                        hotel.city,
+                        ?hotelDistance(context, hotel),
+                      ].join('  •  '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [

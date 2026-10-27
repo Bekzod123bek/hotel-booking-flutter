@@ -11,6 +11,7 @@ import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/hotels/data/demo_payment_gateway.dart';
 import 'features/hotels/data/firebase/firestore_hotel_repository.dart';
+import 'features/hotels/data/geolocator_location_service.dart';
 import 'features/hotels/data/firebase/firestore_user_data_repository.dart';
 import 'features/hotels/data/local_user_data_repository.dart';
 import 'features/hotels/data/mock_hotel_repository.dart';
@@ -70,6 +71,9 @@ Future<void> setupDependencies({
       );
   }
   sl
+    ..registerLazySingleton<LocationService>(
+      () => const GeolocatorLocationService(),
+    )
     ..registerLazySingleton<PaymentGateway>(
       () => DemoPaymentGateway(
         delay: fast ? Duration.zero : const Duration(milliseconds: 1500),
@@ -78,7 +82,7 @@ Future<void> setupDependencies({
     ..registerFactory(() => ThemeCubit(sl()))
     ..registerFactory(() => LocaleCubit(sl()))
     ..registerFactory(() => AuthCubit(sl()))
-    ..registerFactory(() => HotelsCubit(sl())..load())
+    ..registerFactory(() => HotelsCubit(sl(), sl())..load())
     ..registerFactory(() => FavoritesCubit(sl())..load())
     ..registerFactory(() => BookingsCubit(sl(), sl())..load());
 }

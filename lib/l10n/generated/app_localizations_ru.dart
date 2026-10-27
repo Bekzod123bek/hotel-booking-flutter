@@ -186,6 +186,59 @@ class AppLocalizationsRu extends AppLocalizations {
   String get retry => 'Повторить';
 
   @override
+  String get sortNearest => 'Сначала ближайшие';
+
+  @override
+  String get nearMe => 'Рядом со мной';
+
+  @override
+  String get findingLocation => 'Определяем ваше местоположение…';
+
+  @override
+  String distanceKm(String km) {
+    return '$km км от вас';
+  }
+
+  @override
+  String distanceM(int m) {
+    return '$m м от вас';
+  }
+
+  @override
+  String get locationDenied =>
+      'Доступ к геолокации не разрешён, поэтому сортировка по расстоянию недоступна.';
+
+  @override
+  String get locationDeniedForever =>
+      'Геолокация запрещена для приложения. Разрешить её можно в настройках.';
+
+  @override
+  String get locationServiceOff => 'Геолокация выключена на устройстве.';
+
+  @override
+  String get locationUnavailable =>
+      'Не удалось определить местоположение. Попробуйте ещё раз.';
+
+  @override
+  String get openSettings => 'Настройки';
+
+  @override
+  String get mapView => 'Карта';
+
+  @override
+  String get listView => 'Список';
+
+  @override
+  String get hotelsOnMap => 'Отели на карте';
+
+  @override
+  String get youAreHere => 'Вы здесь';
+
+  @override
+  String get sampleDataNote =>
+      'Примерные данные: отели и их расположение вымышлены.';
+
+  @override
   String get sortRecommended => 'Рекомендуемые';
 
   @override

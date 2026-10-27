@@ -1,4 +1,30 @@
+import 'dart:math' as math;
+
 import 'package:equatable/equatable.dart';
+
+/// A point on the map.
+class GeoPoint extends Equatable {
+  const GeoPoint(this.latitude, this.longitude);
+
+  final double latitude;
+  final double longitude;
+
+  /// Great-circle distance to [other] in kilometres (haversine formula).
+  double distanceKmTo(GeoPoint other) {
+    const earthRadiusKm = 6371.0;
+    double rad(double deg) => deg * math.pi / 180;
+    final dLat = rad(other.latitude - latitude);
+    final dLng = rad(other.longitude - longitude);
+    final a = math.pow(math.sin(dLat / 2), 2) +
+        math.cos(rad(latitude)) *
+            math.cos(rad(other.latitude)) *
+            math.pow(math.sin(dLng / 2), 2);
+    return 2 * earthRadiusKm * math.asin(math.min(1, math.sqrt(a)));
+  }
+
+  @override
+  List<Object?> get props => [latitude, longitude];
+}
 
 class Review extends Equatable {
   const Review({
@@ -120,13 +146,15 @@ class Hotel extends Equatable {
 
   String get cover => images.first;
 
+  GeoPoint get position => GeoPoint(latitude, longitude);
+
   int priceFor(RoomType room) => (pricePerNight * room.priceFactor).round();
 
   @override
   List<Object?> get props => [id];
 }
 
-enum HotelSort { recommended, priceLow, priceHigh, rating }
+enum HotelSort { recommended, nearest, priceLow, priceHigh, rating }
 
 class HotelFilter extends Equatable {
   const HotelFilter({
@@ -137,6 +165,7 @@ class HotelFilter extends Equatable {
     this.minRating = 0,
     this.amenities = const {},
     this.sort = HotelSort.recommended,
+    this.origin,
   });
 
   static const maxPriceLimit = 300;
@@ -148,6 +177,9 @@ class HotelFilter extends Equatable {
   final double minRating;
   final Set<String> amenities;
   final HotelSort sort;
+
+  /// Where the user is. Needed for [HotelSort.nearest].
+  final GeoPoint? origin;
 
   /// Number of filters set in the filter sheet (search and city excluded).
   int get activeCount => [
@@ -180,6 +212,13 @@ class HotelFilter extends Equatable {
     switch (sort) {
       case HotelSort.recommended:
         break;
+      case HotelSort.nearest:
+        final from = origin;
+        if (from != null) {
+          result.sort((a, b) => from
+              .distanceKmTo(a.position)
+              .compareTo(from.distanceKmTo(b.position)));
+        }
       case HotelSort.priceLow:
         result.sort((a, b) => a.pricePerNight.compareTo(b.pricePerNight));
       case HotelSort.priceHigh:
@@ -198,6 +237,7 @@ class HotelFilter extends Equatable {
     double? minRating,
     Set<String>? amenities,
     HotelSort? sort,
+    GeoPoint? origin,
   }) => HotelFilter(
     query: query ?? this.query,
     city: city != null ? city() : this.city,
@@ -206,10 +246,12 @@ class HotelFilter extends Equatable {
     minRating: minRating ?? this.minRating,
     amenities: amenities ?? this.amenities,
     sort: sort ?? this.sort,
+    origin: origin ?? this.origin,
   );
 
   @override
   List<Object?> get props => [
+    origin,
     query,
     city,
     minPrice,

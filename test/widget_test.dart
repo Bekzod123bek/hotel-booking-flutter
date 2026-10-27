@@ -9,16 +9,27 @@ import 'package:hotel_booking/features/hotels/data/local_user_data_repository.da
 import 'package:hotel_booking/features/hotels/data/mock_hotel_repository.dart';
 import 'package:hotel_booking/features/hotels/data/sample_hotels.dart';
 import 'package:hotel_booking/features/hotels/domain/entities.dart';
+import 'package:hotel_booking/features/hotels/domain/hotel_repository.dart';
 import 'package:hotel_booking/features/hotels/presentation/cubit/favorites_cubit.dart';
 import 'package:hotel_booking/features/hotels/presentation/cubit/hotels_cubit.dart';
 import 'package:hotel_booking/injection.dart';
 import 'package:hotel_booking/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hotel_booking/features/hotels/presentation/widgets/hotel_map.dart';
+import 'package:hotel_booking/features/hotels/presentation/pages/hotels_map_page.dart';
 
 Future<SharedPreferences> _prefs([Map<String, Object> values = const {}]) async {
   SharedPreferences.setMockInitialValues(values);
   return SharedPreferences.getInstance();
+}
+
+class _NoLocation implements LocationService {
+  @override
+  Future<LocationResult> currentPosition() async =>
+      const LocationResult.failed(LocationIssue.unavailable);
+
+  @override
+  Future<void> openSettings() async {}
 }
 
 void main() {
@@ -26,6 +37,7 @@ void main() {
     AppImage.networkEnabled = false;
     Skeleton.animate = false;
     HotelMap.networkEnabled = false;
+    HotelsMapPage.networkEnabled = false;
   });
 
   group('HotelFilter', () {
@@ -82,7 +94,10 @@ void main() {
 
   group('Cubits', () {
     test('HotelsCubit loads hotels and applies the city filter', () async {
-      final cubit = HotelsCubit(MockHotelRepository(delay: Duration.zero));
+      final cubit = HotelsCubit(
+        MockHotelRepository(delay: Duration.zero),
+        _NoLocation(),
+      );
       await cubit.load();
       expect(cubit.state.all, hasLength(sampleHotels.length));
       expect(cubit.state.featured, isNotEmpty);

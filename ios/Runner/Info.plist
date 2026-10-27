@@ -6,6 +6,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is used to show the hotels closest to you.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Hotel Booking</string>
 	<key>CFBundleExecutable</key>

@@ -10,6 +10,8 @@ class HotelsState extends Equatable {
     this.filter = const HotelFilter(),
     this.loading = true,
     this.failed = false,
+    this.locating = false,
+    this.locationIssue,
   });
 
   final List<Hotel> all;
@@ -18,6 +20,15 @@ class HotelsState extends Equatable {
 
   /// Whether the last attempt to load the hotels failed.
   final bool failed;
+
+  /// Whether we are waiting for the phone's position.
+  final bool locating;
+
+  /// Why the position could not be read; `null` when there is no problem.
+  final LocationIssue? locationIssue;
+
+  /// Where the user is, once known.
+  GeoPoint? get origin => filter.origin;
 
   List<Hotel> get results => filter.apply(all);
   List<Hotel> get featured => all.where((h) => h.featured).toList();
@@ -36,22 +47,29 @@ class HotelsState extends Equatable {
     HotelFilter? filter,
     bool? loading,
     bool? failed,
+    bool? locating,
+    LocationIssue? Function()? locationIssue,
   }) =>
       HotelsState(
         all: all ?? this.all,
         filter: filter ?? this.filter,
         loading: loading ?? this.loading,
         failed: failed ?? this.failed,
+        locating: locating ?? this.locating,
+        locationIssue:
+            locationIssue != null ? locationIssue() : this.locationIssue,
       );
 
   @override
-  List<Object?> get props => [all, filter, loading, failed];
+  List<Object?> get props =>
+      [all, filter, loading, failed, locating, locationIssue];
 }
 
 class HotelsCubit extends Cubit<HotelsState> {
-  HotelsCubit(this._repository) : super(const HotelsState());
+  HotelsCubit(this._repository, this._location) : super(const HotelsState());
 
   final HotelRepository _repository;
+  final LocationService _location;
 
   Future<void> load() async {
     emit(state.copyWith(loading: true, failed: false));
@@ -62,6 +80,26 @@ class HotelsCubit extends Cubit<HotelsState> {
       emit(state.copyWith(loading: false, failed: true));
     }
   }
+
+  /// Reads the user's position and sorts the hotels from the nearest.
+  Future<void> findNearby() async {
+    emit(state.copyWith(locating: true, locationIssue: () => null));
+    final result = await _location.currentPosition();
+    final position = result.position;
+    if (position == null) {
+      emit(state.copyWith(locating: false, locationIssue: () => result.issue));
+      return;
+    }
+    emit(state.copyWith(
+      locating: false,
+      filter: state.filter.copyWith(origin: position, sort: HotelSort.nearest),
+    ));
+  }
+
+  Future<void> openLocationSettings() => _location.openSettings();
+
+  void dismissLocationIssue() =>
+      emit(state.copyWith(locationIssue: () => null));
 
   void search(String query) =>
       emit(state.copyWith(filter: state.filter.copyWith(query: query)));

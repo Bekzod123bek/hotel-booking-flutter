@@ -8,6 +8,7 @@ import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../hotels/presentation/cubit/bookings_cubit.dart';
 import '../../hotels/presentation/cubit/favorites_cubit.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/layout/breakpoints.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -50,106 +51,112 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.navProfile)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                colors: [theme.colorScheme.primary, theme.colorScheme.tertiary],
+      body: ReadableWidth(
+        maxWidth: 640,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.tertiary,
+                  ],
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    user?.initials ?? '?',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.primary,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 32,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      user?.initials ?? '?',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user?.name ?? l10n.guest,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user?.name ?? l10n.guest,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      Text(
-                        user?.email ?? '',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white70,
+                        Text(
+                          user?.email ?? '',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white70,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _Stat(
-                  icon: Icons.luggage_outlined,
-                  value: '$bookings',
-                  label: l10n.navBookings,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _Stat(
-                  icon: Icons.favorite_border,
-                  value: '$favorites',
-                  label: l10n.navFavorites,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Column(
+            const SizedBox(height: 16),
+            Row(
               children: [
-                SwitchListTile(
-                  secondary: const Icon(Icons.dark_mode_outlined),
-                  title: Text(l10n.darkMode),
-                  value: dark,
-                  onChanged: context.read<ThemeCubit>().setDark,
+                Expanded(
+                  child: _Stat(
+                    icon: Icons.luggage_outlined,
+                    value: '$bookings',
+                    label: l10n.navBookings,
+                  ),
                 ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                const _LanguageTile(),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: Text(l10n.aboutApp),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => showAboutDialog(
-                    context: context,
-                    applicationName: l10n.appTitle,
-                    applicationVersion: '1.0.0',
-                    children: [Text(l10n.aboutBody)],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _Stat(
+                    icon: Icons.favorite_border,
+                    value: '$favorites',
+                    label: l10n.navFavorites,
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: () => _logout(context),
-            icon: const Icon(Icons.logout),
-            label: Text(l10n.logOut),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Card(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    secondary: const Icon(Icons.dark_mode_outlined),
+                    title: Text(l10n.darkMode),
+                    value: dark,
+                    onChanged: context.read<ThemeCubit>().setDark,
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  const _LanguageTile(),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    title: Text(l10n.aboutApp),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => showAboutDialog(
+                      context: context,
+                      applicationName: l10n.appTitle,
+                      applicationVersion: '1.0.0',
+                      children: [Text(l10n.aboutBody)],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: () => _logout(context),
+              icon: const Icon(Icons.logout),
+              label: Text(l10n.logOut),
+            ),
+          ],
+        ),
       ),
     );
   }

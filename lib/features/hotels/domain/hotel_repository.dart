@@ -27,3 +27,22 @@ abstract class PaymentGateway {
   /// Completes when the payment succeeded; throws when it failed.
   Future<void> charge({required int amount, required String description});
 }
+
+enum LocationIssue { denied, deniedForever, serviceDisabled, unavailable }
+
+/// Result of asking where the user is: either a position or the reason why not.
+class LocationResult {
+  const LocationResult.found(GeoPoint this.position) : issue = null;
+  const LocationResult.failed(LocationIssue this.issue) : position = null;
+
+  final GeoPoint? position;
+  final LocationIssue? issue;
+}
+
+abstract class LocationService {
+  /// Asks for permission if needed, then returns the current position.
+  Future<LocationResult> currentPosition();
+
+  /// Opens the system settings so the user can allow location access.
+  Future<void> openSettings();
+}

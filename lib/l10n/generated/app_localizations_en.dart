@@ -184,6 +184,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Try again';
 
   @override
+  String get sortNearest => 'Nearest first';
+
+  @override
+  String get nearMe => 'Near me';
+
+  @override
+  String get findingLocation => 'Finding your location…';
+
+  @override
+  String distanceKm(String km) {
+    return '$km km away';
+  }
+
+  @override
+  String distanceM(int m) {
+    return '$m m away';
+  }
+
+  @override
+  String get locationDenied =>
+      'Location access was not allowed, so hotels cannot be sorted by distance.';
+
+  @override
+  String get locationDeniedForever =>
+      'Location is blocked for this app. You can allow it in the settings.';
+
+  @override
+  String get locationServiceOff => 'Location is switched off on this device.';
+
+  @override
+  String get locationUnavailable =>
+      'Could not read your location. Please try again.';
+
+  @override
+  String get openSettings => 'Settings';
+
+  @override
+  String get mapView => 'Map';
+
+  @override
+  String get listView => 'List';
+
+  @override
+  String get hotelsOnMap => 'Hotels on the map';
+
+  @override
+  String get youAreHere => 'You are here';
+
+  @override
+  String get sampleDataNote =>
+      'Sample data: hotels and their positions are not real.';
+
+  @override
   String get sortRecommended => 'Recommended';
 
   @override

@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hotel_booking/core/l10n/locale_cubit.dart';
-import 'package:hotel_booking/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hotel_booking/core/l10n/l10n.dart';
 
 Set<String> _keys(String file) =>
     (jsonDecode(File('lib/l10n/$file').readAsStringSync())
@@ -35,6 +35,15 @@ void main() {
       '21 ночь',
     ]);
     expect(ru.priceRange(0, 300, '+'), contains(r'$300+'));
+  });
+
+  test('distances read naturally in each language', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final uz = lookupAppLocalizations(const Locale('uz'));
+    expect(distanceLabel(en, 0.42), '420 m away');
+    expect(distanceLabel(en, 1.24), '1.2 km away');
+    expect(distanceLabel(en, 18.6), '19 km away');
+    expect(distanceLabel(uz, 1.24), '1.2 km uzoqlikda');
   });
 
   test('falls back to Uzbek for unsupported phone languages', () {

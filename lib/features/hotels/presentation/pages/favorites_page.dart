@@ -6,6 +6,7 @@ import '../cubit/favorites_cubit.dart';
 import '../cubit/hotels_cubit.dart';
 import '../widgets/hotel_widgets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
@@ -28,12 +29,24 @@ class FavoritesPage extends StatelessWidget {
               title: context.l10n.noFavoritesTitle,
               message: context.l10n.noFavoritesMessage,
             )
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-              itemCount: hotels.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (_, i) =>
-                  HotelTile(hotel: hotels[i], heroTag: 'fav-${hotels[i].id}'),
+          : ReadableWidth(
+              child: GridView.builder(
+                padding: EdgeInsets.fromLTRB(
+                  context.windowSize.gutter,
+                  8,
+                  context.windowSize.gutter,
+                  24,
+                ),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: context.windowSize.isCompact ? 1 : 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  mainAxisExtent: 118,
+                ),
+                itemCount: hotels.length,
+                itemBuilder: (_, i) =>
+                    HotelTile(hotel: hotels[i], heroTag: 'fav-${hotels[i].id}'),
+              ),
             ),
     );
   }

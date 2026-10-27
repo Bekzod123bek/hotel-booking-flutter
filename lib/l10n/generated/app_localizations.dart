@@ -418,6 +418,96 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get retry;
 
+  /// No description provided for @sortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest first'**
+  String get sortNearest;
+
+  /// No description provided for @nearMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get nearMe;
+
+  /// No description provided for @findingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location…'**
+  String get findingLocation;
+
+  /// No description provided for @distanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away'**
+  String distanceKm(String km);
+
+  /// No description provided for @distanceM.
+  ///
+  /// In en, this message translates to:
+  /// **'{m} m away'**
+  String distanceM(int m);
+
+  /// No description provided for @locationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access was not allowed, so hotels cannot be sorted by distance.'**
+  String get locationDenied;
+
+  /// No description provided for @locationDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is blocked for this app. You can allow it in the settings.'**
+  String get locationDeniedForever;
+
+  /// No description provided for @locationServiceOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is switched off on this device.'**
+  String get locationServiceOff;
+
+  /// No description provided for @locationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read your location. Please try again.'**
+  String get locationUnavailable;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get openSettings;
+
+  /// No description provided for @mapView.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mapView;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listView;
+
+  /// No description provided for @hotelsOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels on the map'**
+  String get hotelsOnMap;
+
+  /// No description provided for @youAreHere.
+  ///
+  /// In en, this message translates to:
+  /// **'You are here'**
+  String get youAreHere;
+
+  /// No description provided for @sampleDataNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample data: hotels and their positions are not real.'**
+  String get sampleDataNote;
+
   /// No description provided for @sortRecommended.
   ///
   /// In en, this message translates to:

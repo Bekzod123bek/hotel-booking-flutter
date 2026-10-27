@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../features/auth/domain/auth_repository.dart';
 import '../../features/hotels/domain/entities.dart';
+import '../../features/hotels/domain/hotel_repository.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 export '../../l10n/generated/app_localizations.dart';
@@ -9,6 +10,20 @@ export '../../l10n/generated/app_localizations.dart';
 extension L10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
 }
+
+extension LocationIssueL10n on LocationIssue {
+  String message(AppLocalizations l10n) => switch (this) {
+        LocationIssue.denied => l10n.locationDenied,
+        LocationIssue.deniedForever => l10n.locationDeniedForever,
+        LocationIssue.serviceDisabled => l10n.locationServiceOff,
+        LocationIssue.unavailable => l10n.locationUnavailable,
+      };
+}
+
+/// "1.2 km away", or metres when the hotel is very close.
+String distanceLabel(AppLocalizations l10n, double km) => km < 1
+    ? l10n.distanceM((km * 1000 / 10).round() * 10)
+    : l10n.distanceKm(km < 10 ? km.toStringAsFixed(1) : km.round().toString());
 
 extension AuthErrorL10n on AuthError {
   String message(AppLocalizations l10n) => switch (this) {
@@ -24,6 +39,7 @@ extension AuthErrorL10n on AuthError {
 extension HotelSortL10n on HotelSort {
   String label(AppLocalizations l10n) => switch (this) {
     HotelSort.recommended => l10n.sortRecommended,
+    HotelSort.nearest => l10n.sortNearest,
     HotelSort.priceLow => l10n.sortPriceLow,
     HotelSort.priceHigh => l10n.sortPriceHigh,
     HotelSort.rating => l10n.sortRating,
