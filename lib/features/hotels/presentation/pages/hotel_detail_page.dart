@@ -9,6 +9,7 @@ import '../widgets/hotel_widgets.dart';
 import 'booking_page.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../widgets/hotel_map.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 class HotelDetailPage extends StatefulWidget {
   const HotelDetailPage({
@@ -130,7 +131,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               ),
             ),
           ),
-          SliverPadding(
+          SliverReadableWidth(
+            maxWidth: 760,
+            sliver: SliverPadding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
             sliver: SliverList.list(
               children: [
@@ -240,6 +243,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 ],
               ],
             ),
+          ),
           ),
         ],
       ),

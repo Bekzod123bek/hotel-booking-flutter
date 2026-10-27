@@ -127,12 +127,14 @@ class _HotelsMapPageState extends State<HotelsMapPage> {
               right: 12,
               bottom: 12,
               child: SafeArea(
-                child: ConstrainedBox(
+                child: Center(
+                  child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 520),
                   child: HotelTile(
                     hotel: selected,
                     heroTag: 'map-${selected.id}',
                   ),
+                ),
                 ),
               ),
             ),

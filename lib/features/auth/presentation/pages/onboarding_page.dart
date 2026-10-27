@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/gradient_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 const _images = [
   'https://images.unsplash.com/photo-1549294413-26f195200c16?w=900&q=80',
@@ -72,7 +73,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Column(
+              child: ReadableWidth(
+                maxWidth: 560,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Align(
@@ -133,6 +136,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ],
                   ),
                 ],
+              ),
               ),
             ),
           ),

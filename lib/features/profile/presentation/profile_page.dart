@@ -54,7 +54,12 @@ class ProfilePage extends StatelessWidget {
       body: ReadableWidth(
         maxWidth: 640,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: EdgeInsets.fromLTRB(
+            20,
+            8,
+            20,
+            24 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             Container(
               padding: const EdgeInsets.all(20),
@@ -214,12 +219,19 @@ class _Stat extends StatelessWidget {
           children: [
             Icon(icon, color: theme.colorScheme.primary),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value, style: theme.textTheme.titleLarge),
-                Text(label, style: theme.textTheme.bodySmall),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(value, style: theme.textTheme.titleLarge),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

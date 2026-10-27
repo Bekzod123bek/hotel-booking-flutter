@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hotel_booking/core/theme/theme_cubit.dart';
+import 'package:hotel_booking/core/widgets/glass_nav.dart';
 import 'package:hotel_booking/core/widgets/gradient_button.dart';
 import 'package:hotel_booking/core/widgets/app_image.dart';
 import 'package:hotel_booking/core/widgets/skeleton.dart';
@@ -192,6 +193,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Hello, Bekzod 👋'), findsOneWidget);
+      expect(find.byType(GlassNavBar), findsOneWidget);
       expect(find.text('Featured stays'), findsOneWidget);
       expect(find.text('Popular hotels'), findsOneWidget);
     });

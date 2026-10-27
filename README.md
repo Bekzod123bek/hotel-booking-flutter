@@ -41,9 +41,10 @@ same language is one switch away.
   card shows how far the hotel is; a map screen shows all hotels with their
   price and your own position. Refusing the location permission only disables
   the sorting, with a message explaining why
-- **Responsive**: one column and a bottom bar on a phone, a navigation rail and
-  a two or three column grid on a tablet or desktop window, with a readable
-  maximum width
+- **Responsive everywhere**: a floating glass bar and one column on a phone, a
+  floating side rail and a two or three column grid on a tablet or desktop
+  window; forms, sheets and the hotel page keep a readable maximum width. A
+  widget test pumps every tab at phone, tablet and desktop size
 - **Booking flow**: room type, dates, guests, guest name and phone, payment
   choice (pay at the hotel, or a simulated online payment), price breakdown,
   booking code

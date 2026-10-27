@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/gradient_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 final _emailPattern = RegExp(r'^[\w.+\-]+@[\w\-]+\.[\w.\-]{2,}$');
 
@@ -81,7 +82,9 @@ class _LoginPageState extends State<LoginPage> {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
             sliver: SliverToBoxAdapter(
-              child: Form(
+              child: ReadableWidth(
+                maxWidth: 460,
+                child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -195,6 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           ),

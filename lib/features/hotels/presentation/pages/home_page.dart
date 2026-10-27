@@ -254,7 +254,12 @@ class _HomePageState extends State<HomePage> {
                         )
                       else
                         SliverPadding(
-                          padding: EdgeInsets.fromLTRB(gutter, 0, gutter, 24),
+                          padding: EdgeInsets.fromLTRB(
+                          gutter,
+                          0,
+                          gutter,
+                          24 + MediaQuery.paddingOf(context).bottom,
+                        ),
                           sliver: window.hotelColumns == 1
                               ? SliverList.separated(
                                   itemCount: results.length,
@@ -271,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                                         crossAxisCount: window.hotelColumns,
                                         mainAxisSpacing: 16,
                                         crossAxisSpacing: 16,
-                                        mainAxisExtent: 320,
+                                        mainAxisExtent: 336,
                                       ),
                                   itemCount: results.length,
                                   itemBuilder: (_, i) => HotelCard(

@@ -4,6 +4,7 @@ import '../../data/sample_hotels.dart';
 import '../../domain/entities.dart';
 import 'hotel_widgets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/layout/breakpoints.dart';
 
 /// Opens the filter sheet and returns the new filter, or `null` if dismissed.
 Future<HotelFilter?> showFilterSheet(
@@ -14,6 +15,8 @@ Future<HotelFilter?> showFilterSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    // On a wide window the sheet stops being full width, like a dialog.
+    constraints: const BoxConstraints(maxWidth: 640),
     builder: (_) => _FilterSheet(initial: current),
   );
 }
@@ -49,8 +52,8 @@ class _FilterSheetState extends State<_FilterSheet> {
     final l10n = context.l10n;
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.85,
       maxChildSize: 0.95,
+      initialChildSize: context.windowSize.isCompact ? 0.85 : 0.7,
       builder: (context, controller) => Column(
         children: [
           Padding(

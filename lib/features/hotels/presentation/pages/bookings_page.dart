@@ -28,7 +28,12 @@ class BookingsPage extends StatelessWidget {
           final window = context.windowSize;
           return ReadableWidth(
             child: GridView.builder(
-              padding: EdgeInsets.fromLTRB(window.gutter, 8, window.gutter, 24),
+              padding: EdgeInsets.fromLTRB(
+                window.gutter,
+                8,
+                window.gutter,
+                24 + MediaQuery.paddingOf(context).bottom,
+              ),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: window.isCompact ? 1 : 2,
                 mainAxisSpacing: 14,

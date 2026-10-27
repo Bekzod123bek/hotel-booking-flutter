@@ -193,6 +193,8 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
+        // Clears the floating navigation bar and the booking bar.
+        insetPadding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       dividerTheme: DividerThemeData(color: scheme.outlineVariant, space: 1),

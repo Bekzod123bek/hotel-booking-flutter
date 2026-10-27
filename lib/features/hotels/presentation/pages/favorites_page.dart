@@ -35,7 +35,7 @@ class FavoritesPage extends StatelessWidget {
                   context.windowSize.gutter,
                   8,
                   context.windowSize.gutter,
-                  24,
+                  24 + MediaQuery.paddingOf(context).bottom,
                 ),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: context.windowSize.isCompact ? 1 : 2,

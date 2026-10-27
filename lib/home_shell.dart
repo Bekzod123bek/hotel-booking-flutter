@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/l10n/l10n.dart';
 import 'core/layout/breakpoints.dart';
+import 'core/widgets/glass_nav.dart';
 import 'features/hotels/presentation/cubit/bookings_cubit.dart';
 import 'features/hotels/presentation/cubit/favorites_cubit.dart';
 import 'features/hotels/presentation/pages/bookings_page.dart';
@@ -20,96 +21,88 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  /// One entry per tab; the icons and counters are shared by the bottom bar
-  /// and the side rail.
-  List<_Destination> _destinations(AppLocalizations l10n) {
+  List<GlassNavItem> _items(AppLocalizations l10n) {
     final favorites = context.select((FavoritesCubit c) => c.state.length);
     final bookings = context.select((BookingsCubit c) => c.state.length);
     return [
-      _Destination(Icons.explore_outlined, Icons.explore, l10n.navExplore, 0),
-      _Destination(
-        Icons.favorite_border,
-        Icons.favorite,
-        l10n.navFavorites,
-        favorites,
+      GlassNavItem(
+        icon: Icons.explore_outlined,
+        selectedIcon: Icons.explore,
+        label: l10n.navExplore,
       ),
-      _Destination(
-        Icons.luggage_outlined,
-        Icons.luggage,
-        l10n.navBookings,
-        bookings,
+      GlassNavItem(
+        icon: Icons.favorite_border,
+        selectedIcon: Icons.favorite,
+        label: l10n.navFavorites,
+        count: favorites,
       ),
-      _Destination(Icons.person_outline, Icons.person, l10n.navProfile, 0),
+      GlassNavItem(
+        icon: Icons.luggage_outlined,
+        selectedIcon: Icons.luggage,
+        label: l10n.navBookings,
+        count: bookings,
+      ),
+      GlassNavItem(
+        icon: Icons.person_outline,
+        selectedIcon: Icons.person,
+        label: l10n.navProfile,
+      ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
+    final items = _items(context.l10n);
     final window = context.windowSize;
-    final destinations = _destinations(l10n);
 
     const pages = [HomePage(), FavoritesPage(), BookingsPage(), ProfilePage()];
     final body = IndexedStack(index: _index, children: pages);
 
-    if (!window.usesSideNavigation) {
+    if (window.usesSideNavigation) {
       return Scaffold(
-        body: body,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: _select,
-          destinations: [
-            for (final d in destinations)
-              NavigationDestination(
-                icon: d.badged(Icon(d.icon)),
-                selectedIcon: Icon(d.selectedIcon),
-                label: d.label,
-              ),
+        body: Row(
+          children: [
+            GlassNavRail(
+              items: items,
+              selectedIndex: _index,
+              onSelected: _select,
+            ),
+            Expanded(child: body),
           ],
         ),
       );
     }
 
-    // Wide window: the rail replaces the bottom bar, and it shows labels once
-    // there is room for them.
+    // The bar floats inside the body rather than as `bottomNavigationBar`, so
+    // the pages scroll underneath the glass; they keep room for it through the
+    // bottom padding injected below.
     return Scaffold(
-      body: Row(
+      body: Stack(
         children: [
-          NavigationRail(
-            selectedIndex: _index,
-            onDestinationSelected: _select,
-            labelType: window == WindowSize.medium
-                ? NavigationRailLabelType.selected
-                : NavigationRailLabelType.all,
-            destinations: [
-              for (final d in destinations)
-                NavigationRailDestination(
-                  icon: d.badged(Icon(d.icon)),
-                  selectedIcon: Icon(d.selectedIcon),
-                  label: Text(d.label),
+          Positioned.fill(
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                padding: MediaQuery.paddingOf(context).copyWith(
+                  bottom: GlassNavBar.spaceFor(context),
                 ),
-            ],
+              ),
+              child: body,
+            ),
           ),
-          const VerticalDivider(width: 1),
-          Expanded(child: body),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: GlassNavBar(
+              items: items,
+              selectedIndex: _index,
+              onSelected: _select,
+            ),
+          ),
         ],
       ),
     );
   }
 
   void _select(int i) => setState(() => _index = i);
-}
-
-class _Destination {
-  const _Destination(this.icon, this.selectedIcon, this.label, this.count);
-
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
-
-  /// Shown as a badge; `0` means no badge.
-  final int count;
-
-  Widget badged(Widget child) =>
-      count == 0 ? child : Badge(label: Text('$count'), child: child);
 }
