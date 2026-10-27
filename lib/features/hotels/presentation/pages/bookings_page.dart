@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_image.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../domain/entities.dart';
 import '../cubit/bookings_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 class BookingsPage extends StatelessWidget {
   const BookingsPage({super.key});
@@ -13,14 +14,14 @@ class BookingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My bookings')),
+      appBar: AppBar(title: Text(context.l10n.myBookings)),
       body: BlocBuilder<BookingsCubit, List<Booking>>(
         builder: (context, bookings) {
           if (bookings.isEmpty) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.luggage_outlined,
-              title: 'No trips booked',
-              message: 'When you book a hotel it will show up here.',
+              title: context.l10n.noTripsTitle,
+              message: context.l10n.noTripsMessage,
             );
           }
           return ListView.separated(
@@ -42,16 +43,17 @@ class _BookingCard extends StatelessWidget {
 
   Future<void> _cancel(BuildContext context) async {
     final cubit = context.read<BookingsCubit>();
+    final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel booking?'),
-        content: Text('Your stay at ${booking.hotelName} will be cancelled.'),
+        title: Text(l10n.cancelBookingQ),
+        content: Text(l10n.cancelBody(booking.hotelName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep'),
+            child: Text(l10n.keep),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -59,22 +61,24 @@ class _BookingCard extends StatelessWidget {
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Cancel booking'),
+            child: Text(l10n.cancelBooking),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
-    await cubit.cancel(booking.id);
+    await cubit.cancel(booking);
     messenger.showSnackBar(
-      SnackBar(content: Text('Booking at ${booking.hotelName} cancelled')),
+      SnackBar(content: Text(l10n.bookingCancelled(booking.hotelName))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final format = DateFormat('d MMM');
+    final l10n = context.l10n;
+    final format =
+        DateFormat('d MMM', Localizations.localeOf(context).toString());
     final upcoming = booking.checkIn.isAfter(DateTime.now());
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -110,7 +114,7 @@ class _BookingCard extends StatelessWidget {
                   top: 12,
                   left: 12,
                   child: Chip(
-                    label: Text(upcoming ? 'Upcoming' : 'Confirmed'),
+                    label: Text(upcoming ? l10n.upcoming : l10n.confirmed),
                     visualDensity: VisualDensity.compact,
                   ),
                 ),
@@ -128,18 +132,26 @@ class _BookingCard extends StatelessWidget {
                       Text(
                         '${format.format(booking.checkIn)} – '
                         '${format.format(booking.checkOut)}  •  '
-                        '${booking.nights} night${booking.nights == 1 ? '' : 's'}',
+                        '${l10n.nightsCount(booking.nights)}',
                         style: theme.textTheme.titleSmall,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${booking.roomName} room  •  ${booking.guests} '
-                        'guest${booking.guests == 1 ? '' : 's'}  •  ${booking.city}',
+                        '${l10n.roomWithName(RoomType.byKey(booking.roomName).title(l10n))}'
+                        '  •  ${l10n.guestsCount(booking.guests)}  •  ${booking.city}',
                         style: theme.textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.codeLabel(booking.code),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Total \$${booking.total}',
+                        l10n.totalAmount(booking.total),
                         style: theme.textTheme.titleMedium
                             ?.copyWith(color: theme.colorScheme.primary),
                       ),
@@ -147,7 +159,7 @@ class _BookingCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cancel booking',
+                  tooltip: l10n.cancelBooking,
                   onPressed: () => _cancel(context),
                   icon: Icon(Icons.delete_outline,
                       color: theme.colorScheme.error),

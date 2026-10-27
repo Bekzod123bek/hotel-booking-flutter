@@ -6,7 +6,10 @@ import '../domain/auth_repository.dart';
 /// password of 6+ characters sign the user in, and the profile is kept in
 /// [SharedPreferences]. Passwords are never stored.
 class LocalAuthRepository implements AuthRepository {
-  LocalAuthRepository(this._prefs, {this.delay = const Duration(milliseconds: 700)});
+  LocalAuthRepository(
+    this._prefs, {
+    this.delay = const Duration(milliseconds: 700),
+  });
 
   static const _onboardingKey = 'onboarding_done';
   static const _loggedInKey = 'logged_in';
@@ -15,6 +18,9 @@ class LocalAuthRepository implements AuthRepository {
 
   final SharedPreferences _prefs;
   final Duration delay;
+
+  @override
+  bool get isCloud => false;
 
   @override
   bool get onboardingDone => _prefs.getBool(_onboardingKey) ?? false;
@@ -32,7 +38,10 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> login({required String email, required String password}) async {
+  Future<AppUser> login({
+    required String email,
+    required String password,
+  }) async {
     await Future<void>.delayed(delay);
     final savedEmail = _prefs.getString(_emailKey);
     final name = savedEmail == email

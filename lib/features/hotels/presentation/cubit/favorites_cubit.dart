@@ -6,9 +6,12 @@ import '../../domain/hotel_repository.dart';
 class FavoritesCubit extends Cubit<Set<String>> {
   FavoritesCubit(this._repository) : super(const {});
 
-  final HotelRepository _repository;
+  final FavoritesRepository _repository;
 
   Future<void> load() async => emit(await _repository.getFavoriteIds());
+
+  /// Forgets the favorites of the previous user (the saved ones stay).
+  void clear() => emit(const {});
 
   bool isFavorite(String id) => state.contains(id);
 

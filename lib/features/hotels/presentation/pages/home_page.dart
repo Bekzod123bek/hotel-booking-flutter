@@ -8,6 +8,7 @@ import '../../domain/entities.dart';
 import '../cubit/hotels_cubit.dart';
 import '../widgets/filter_sheet.dart';
 import '../widgets/hotel_widgets.dart';
+import '../../../../core/l10n/l10n.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,7 +36,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final user = context.select((AuthCubit c) => c.state.user);
-    final firstName = (user?.name ?? 'traveller').split(' ').first;
+    final l10n = context.l10n;
+    final firstName = (user?.name ?? l10n.traveller).split(' ').first;
 
     return Scaffold(
       body: SafeArea(
@@ -58,14 +60,16 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Hello, $firstName 👋',
+                                  l10n.helloUser(firstName),
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text('Where to next?',
-                                    style: theme.textTheme.headlineMedium),
+                                Text(
+                                  l10n.whereNext,
+                                  style: theme.textTheme.headlineMedium,
+                                ),
                               ],
                             ),
                           ),
@@ -95,16 +99,18 @@ class _HomePageState extends State<HomePage> {
                               onChanged: context.read<HotelsCubit>().search,
                               textInputAction: TextInputAction.search,
                               decoration: InputDecoration(
-                                hintText: 'Search hotel or city',
+                                hintText: l10n.searchHint,
                                 prefixIcon: const Icon(Icons.search),
                                 suffixIcon: filter.query.isEmpty
                                     ? null
                                     : IconButton(
-                                        tooltip: 'Clear search',
+                                        tooltip: l10n.clearSearch,
                                         icon: const Icon(Icons.close),
                                         onPressed: () {
                                           _search.clear();
-                                          context.read<HotelsCubit>().search('');
+                                          context.read<HotelsCubit>().search(
+                                            '',
+                                          );
                                         },
                                       ),
                               ),
@@ -115,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                             isLabelVisible: filter.activeCount > 0,
                             label: Text('${filter.activeCount}'),
                             child: IconButton.filled(
-                              tooltip: 'Filters',
+                              tooltip: l10n.filters,
                               style: IconButton.styleFrom(
                                 minimumSize: const Size(56, 56),
                                 shape: RoundedRectangleBorder(
@@ -138,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
                         children: [
                           _CityChip(
-                            label: 'All',
+                            label: l10n.all,
                             selected: filter.city == null,
                             onTap: () =>
                                 context.read<HotelsCubit>().selectCity(null),
@@ -156,10 +162,23 @@ class _HomePageState extends State<HomePage> {
                   ),
                   if (state.loading && state.all.isEmpty)
                     ..._loadingSlivers()
+                  else if (state.failed && state.all.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyState(
+                        icon: Icons.cloud_off_outlined,
+                        title: l10n.loadFailed,
+                        message: l10n.errNetwork,
+                        action: OutlinedButton(
+                          onPressed: context.read<HotelsCubit>().load,
+                          child: Text(l10n.retry),
+                        ),
+                      ),
+                    )
                   else ...[
                     if (filter.isDefault && state.featured.isNotEmpty) ...[
-                      const SliverToBoxAdapter(
-                        child: SectionHeader(title: 'Featured stays'),
+                      SliverToBoxAdapter(
+                        child: SectionHeader(title: l10n.featuredStays),
                       ),
                       SliverToBoxAdapter(
                         child: _FeaturedCarousel(hotels: state.featured),
@@ -168,9 +187,8 @@ class _HomePageState extends State<HomePage> {
                     SliverToBoxAdapter(
                       child: SectionHeader(
                         title: filter.isDefault
-                            ? 'Popular hotels'
-                            : '${results.length} '
-                                '${results.length == 1 ? 'stay' : 'stays'} found',
+                            ? l10n.popularHotels
+                            : l10n.staysFound(results.length),
                         trailing: _SortMenu(current: filter.sort),
                       ),
                     ),
@@ -179,8 +197,8 @@ class _HomePageState extends State<HomePage> {
                         hasScrollBody: false,
                         child: EmptyState(
                           icon: Icons.search_off,
-                          title: 'No hotels found',
-                          message: 'Try another city or loosen the filters.',
+                          title: l10n.noHotelsTitle,
+                          message: l10n.noHotelsMessage,
                           action: OutlinedButton(
                             onPressed: () {
                               _search.clear();
@@ -189,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                                 ..selectCity(null)
                                 ..resetFilters();
                             },
-                            child: const Text('Clear all filters'),
+                            child: Text(l10n.clearAllFilters),
                           ),
                         ),
                       )
@@ -198,7 +216,8 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                         sliver: SliverList.separated(
                           itemCount: results.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 16),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 16),
                           itemBuilder: (_, i) => HotelCard(
                             hotel: results[i],
                             heroTag: 'list-${results[i].id}',
@@ -216,27 +235,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> _loadingSlivers() => [
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
-            child: Skeleton(width: 160, height: 22, radius: 6),
-          ),
-        ),
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Skeleton(height: 220, radius: 24),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(20),
-          sliver: SliverList.separated(
-            itemCount: 3,
-            separatorBuilder: (_, _) => const SizedBox(height: 20),
-            itemBuilder: (_, _) => const HotelCardSkeleton(),
-          ),
-        ),
-      ];
+    const SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
+        child: Skeleton(width: 160, height: 22, radius: 6),
+      ),
+    ),
+    const SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Skeleton(height: 220, radius: 24),
+      ),
+    ),
+    SliverPadding(
+      padding: const EdgeInsets.all(20),
+      sliver: SliverList.separated(
+        itemCount: 3,
+        separatorBuilder: (_, _) => const SizedBox(height: 20),
+        itemBuilder: (_, _) => const HotelCardSkeleton(),
+      ),
+    ),
+  ];
 }
 
 class _CityChip extends StatelessWidget {
@@ -252,14 +271,14 @@ class _CityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: ChoiceChip(
-          label: Text(label),
-          selected: selected,
-          showCheckmark: false,
-          onSelected: (_) => onTap(),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    child: ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      showCheckmark: false,
+      onSelected: (_) => onTap(),
+    ),
+  );
 }
 
 class _SortMenu extends StatelessWidget {
@@ -270,12 +289,12 @@ class _SortMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<HotelSort>(
-      tooltip: 'Sort',
+      tooltip: context.l10n.sort,
       initialValue: current,
       onSelected: context.read<HotelsCubit>().setSort,
       itemBuilder: (_) => [
         for (final s in HotelSort.values)
-          PopupMenuItem(value: s, child: Text(s.label)),
+          PopupMenuItem(value: s, child: Text(s.label(context.l10n))),
       ],
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -284,7 +303,7 @@ class _SortMenu extends StatelessWidget {
           children: [
             const Icon(Icons.swap_vert, size: 18),
             const SizedBox(width: 4),
-            Text(current.label),
+            Text(current.label(context.l10n)),
           ],
         ),
       ),

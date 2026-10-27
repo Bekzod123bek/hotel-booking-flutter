@@ -7,6 +7,7 @@ import 'features/hotels/presentation/pages/bookings_page.dart';
 import 'features/hotels/presentation/pages/favorites_page.dart';
 import 'features/hotels/presentation/pages/home_page.dart';
 import 'features/profile/presentation/profile_page.dart';
+import 'core/l10n/l10n.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -20,6 +21,7 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final favorites = context.select((FavoritesCubit c) => c.state.length);
     final bookings = context.select((BookingsCubit c) => c.state.length);
     return Scaffold(
@@ -36,10 +38,10 @@ class _HomeShellState extends State<HomeShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.explore_outlined),
-            selectedIcon: Icon(Icons.explore),
-            label: 'Explore',
+          NavigationDestination(
+            icon: const Icon(Icons.explore_outlined),
+            selectedIcon: const Icon(Icons.explore),
+            label: l10n.navExplore,
           ),
           NavigationDestination(
             icon: Badge(
@@ -48,7 +50,7 @@ class _HomeShellState extends State<HomeShell> {
               child: const Icon(Icons.favorite_border),
             ),
             selectedIcon: const Icon(Icons.favorite),
-            label: 'Favorites',
+            label: l10n.navFavorites,
           ),
           NavigationDestination(
             icon: Badge(
@@ -57,12 +59,12 @@ class _HomeShellState extends State<HomeShell> {
               child: const Icon(Icons.luggage_outlined),
             ),
             selectedIcon: const Icon(Icons.luggage),
-            label: 'Bookings',
+            label: l10n.navBookings,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: l10n.navProfile,
           ),
         ],
       ),

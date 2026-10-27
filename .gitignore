@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase service account keys and seed tool dependencies
+service-account*.json
+tool/node_modules/
+/android/build/

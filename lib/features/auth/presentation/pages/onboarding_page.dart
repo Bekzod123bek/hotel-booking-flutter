@@ -3,31 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/app_image.dart';
 import '../cubit/auth_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
-class _Slide {
-  const _Slide(this.image, this.title, this.text);
-
-  final String image;
-  final String title;
-  final String text;
-}
-
-const _slides = [
-  _Slide(
-    'https://images.unsplash.com/photo-1549294413-26f195200c16?w=900&q=80',
-    'Discover places to stay',
-    'Hand-picked hotels in Tashkent, Samarkand, Bukhara, Khiva and beyond.',
-  ),
-  _Slide(
-    'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?w=900&q=80',
-    'Compare and choose',
-    'Filter by price, rating and amenities and see real guest reviews.',
-  ),
-  _Slide(
-    'https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=900&q=80',
-    'Book in a few taps',
-    'Pick your dates and room, and keep every booking in one place.',
-  ),
+const _images = [
+  'https://images.unsplash.com/photo-1549294413-26f195200c16?w=900&q=80',
+  'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?w=900&q=80',
+  'https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=900&q=80',
 ];
 
 class OnboardingPage extends StatefulWidget {
@@ -41,7 +22,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final _controller = PageController();
   int _page = 0;
 
-  bool get _last => _page == _slides.length - 1;
+  bool get _last => _page == _images.length - 1;
 
   @override
   void dispose() {
@@ -63,6 +44,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final titles = [l10n.onb1Title, l10n.onb2Title, l10n.onb3Title];
+    final texts = [l10n.onb1Text, l10n.onb2Text, l10n.onb3Text];
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -70,9 +54,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: [
           PageView.builder(
             controller: _controller,
-            itemCount: _slides.length,
+            itemCount: _images.length,
             onPageChanged: (i) => setState(() => _page = i),
-            itemBuilder: (_, i) => AppImage(_slides[i].image),
+            itemBuilder: (_, i) => AppImage(_images[i]),
           ),
           const DecoratedBox(
             decoration: BoxDecoration(
@@ -94,8 +78,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     alignment: Alignment.topRight,
                     child: TextButton(
                       onPressed: context.read<AuthCubit>().completeOnboarding,
-                      style: TextButton.styleFrom(foregroundColor: Colors.white),
-                      child: const Text('Skip'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(l10n.skip),
                     ),
                   ),
                   const Spacer(),
@@ -106,15 +92,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _slides[_page].title,
-                          style: theme.textTheme.headlineLarge
-                              ?.copyWith(color: Colors.white),
+                          titles[_page],
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          _slides[_page].text,
-                          style: theme.textTheme.bodyLarge
-                              ?.copyWith(color: Colors.white70),
+                          texts[_page],
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ),
@@ -122,7 +110,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   const SizedBox(height: 28),
                   Row(
                     children: [
-                      for (var i = 0; i < _slides.length; i++)
+                      for (var i = 0; i < _images.length; i++)
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 250),
                           margin: const EdgeInsets.only(right: 6),
@@ -138,7 +126,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         width: 150,
                         child: FilledButton(
                           onPressed: _next,
-                          child: Text(_last ? 'Get started' : 'Next'),
+                          child: Text(_last ? l10n.getStarted : l10n.next),
                         ),
                       ),
                     ],

@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Hotels are read-only for the app. Add or edit them in the Firebase
+    // console or with tool/seed_hotels.mjs.
+    match /hotels/{hotelId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // A user's profile, favorites and bookings belong to that user only.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /bookings/{bookingId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    // How many rooms are taken on a night. Signed-in users may read it and
+    // may move the counter by one when they book or cancel.
+    //
+    // NOTE: this limits what a client can do but cannot prove a booking really
+    // exists. For a production system do the reservation in a Cloud Function.
+    match /occupancy/{night} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['booked'])
+        && request.resource.data.booked == 1;
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['booked'])
+        && request.resource.data.booked is int
+        && request.resource.data.booked >= 0
+        && request.resource.data.booked <= 50
+        && (request.resource.data.booked - resource.data.booked == 1
+            || resource.data.booked - request.resource.data.booked == 1);
+    }
+  }
+}

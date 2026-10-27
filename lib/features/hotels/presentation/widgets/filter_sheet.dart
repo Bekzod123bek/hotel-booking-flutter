@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import '../../data/sample_hotels.dart';
 import '../../domain/entities.dart';
 import 'hotel_widgets.dart';
+import '../../../../core/l10n/l10n.dart';
 
 /// Opens the filter sheet and returns the new filter, or `null` if dismissed.
-Future<HotelFilter?> showFilterSheet(BuildContext context, HotelFilter current) {
+Future<HotelFilter?> showFilterSheet(
+  BuildContext context,
+  HotelFilter current,
+) {
   return showModalBottomSheet<HotelFilter>(
     context: context,
     isScrollControlled: true,
@@ -33,15 +37,16 @@ class _FilterSheetState extends State<_FilterSheet> {
   late HotelSort _sort = widget.initial.sort;
 
   void _reset() => setState(() {
-        _price = const RangeValues(0, HotelFilter.maxPriceLimit * 1.0);
-        _rating = 0;
-        _amenities.clear();
-        _sort = HotelSort.recommended;
-      });
+    _price = const RangeValues(0, HotelFilter.maxPriceLimit * 1.0);
+    _rating = 0;
+    _amenities.clear();
+    _sort = HotelSort.recommended;
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.85,
@@ -52,9 +57,9 @@ class _FilterSheetState extends State<_FilterSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                Text('Filters', style: theme.textTheme.titleLarge),
+                Text(l10n.filtersTitle, style: theme.textTheme.titleLarge),
                 const Spacer(),
-                TextButton(onPressed: _reset, child: const Text('Reset')),
+                TextButton(onPressed: _reset, child: Text(l10n.reset)),
               ],
             ),
           ),
@@ -63,23 +68,25 @@ class _FilterSheetState extends State<_FilterSheet> {
               controller: controller,
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               children: [
-                _Label('Sort by'),
+                _Label(l10n.sortBy),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
                     for (final s in HotelSort.values)
                       ChoiceChip(
-                        label: Text(s.label),
+                        label: Text(s.label(l10n)),
                         selected: _sort == s,
                         onSelected: (_) => setState(() => _sort = s),
                       ),
                   ],
                 ),
                 _Label(
-                  'Price per night: \$${_price.start.round()} – '
-                  '\$${_price.end.round()}'
-                  '${_price.end >= HotelFilter.maxPriceLimit ? '+' : ''}',
+                  l10n.priceRange(
+                    _price.start.round(),
+                    _price.end.round(),
+                    _price.end >= HotelFilter.maxPriceLimit ? '+' : '',
+                  ),
                 ),
                 RangeSlider(
                   values: _price,
@@ -91,7 +98,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                   ),
                   onChanged: (v) => setState(() => _price = v),
                 ),
-                _Label('Minimum rating'),
+                _Label(l10n.minimumRating),
                 Wrap(
                   spacing: 8,
                   children: [
@@ -99,15 +106,20 @@ class _FilterSheetState extends State<_FilterSheet> {
                       ChoiceChip(
                         avatar: r == 0
                             ? null
-                            : const Icon(Icons.star_rounded,
-                                size: 18, color: Color(0xFFFFB547)),
-                        label: Text(r == 0 ? 'Any' : '${r.toStringAsFixed(1)}+'),
+                            : const Icon(
+                                Icons.star_rounded,
+                                size: 18,
+                                color: Color(0xFFFFB547),
+                              ),
+                        label: Text(
+                          r == 0 ? l10n.any : '${r.toStringAsFixed(1)}+',
+                        ),
                         selected: _rating == r,
                         onSelected: (_) => setState(() => _rating = r),
                       ),
                   ],
                 ),
-                _Label('Amenities'),
+                _Label(l10n.amenities),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -115,7 +127,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     for (final a in allAmenities)
                       FilterChip(
                         avatar: Icon(amenityIcon(a), size: 18),
-                        label: Text(a),
+                        label: Text(amenityLabel(l10n, a)),
                         selected: _amenities.contains(a),
                         onSelected: (on) => setState(
                           () => on ? _amenities.add(a) : _amenities.remove(a),
@@ -140,7 +152,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     sort: _sort,
                   ),
                 ),
-                child: const Text('Show results'),
+                child: Text(l10n.showResults),
               ),
             ),
           ),
@@ -157,7 +169,7 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 10),
-        child: Text(text, style: Theme.of(context).textTheme.titleMedium),
-      );
+    padding: const EdgeInsets.only(top: 20, bottom: 10),
+    child: Text(text, style: Theme.of(context).textTheme.titleMedium),
+  );
 }

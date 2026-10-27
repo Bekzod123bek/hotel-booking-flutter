@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/app_image.dart';
 import '../cubit/auth_cubit.dart';
+import '../../../../core/l10n/l10n.dart';
 
 final _emailPattern = RegExp(r'^[\w.+\-]+@[\w\-]+\.[\w.\-]{2,}$');
 
@@ -44,7 +45,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final busy = context.select((AuthCubit c) => c.state.busy);
+    final error = context.select((AuthCubit c) => c.state.error);
+    final cloud = context.read<AuthCubit>().isCloud;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -82,23 +86,21 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      _register ? 'Create account' : 'Welcome back',
+                      _register ? l10n.createAccount : l10n.welcomeBack,
                       style: theme.textTheme.headlineMedium,
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _register
-                          ? 'Sign up to save favorites and bookings.'
-                          : 'Sign in to continue planning your trip.',
+                      _register ? l10n.signUpSubtitle : l10n.signInSubtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 24),
                     SegmentedButton<bool>(
-                      segments: const [
-                        ButtonSegment(value: false, label: Text('Sign in')),
-                        ButtonSegment(value: true, label: Text('Sign up')),
+                      segments: [
+                        ButtonSegment(value: false, label: Text(l10n.signIn)),
+                        ButtonSegment(value: true, label: Text(l10n.signUp)),
                       ],
                       selected: {_register},
                       onSelectionChanged: (s) =>
@@ -110,12 +112,12 @@ class _LoginPageState extends State<LoginPage> {
                         controller: _name,
                         textCapitalization: TextCapitalization.words,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Full name',
-                          prefixIcon: Icon(Icons.person_outline),
+                        decoration: InputDecoration(
+                          labelText: l10n.fullName,
+                          prefixIcon: const Icon(Icons.person_outline),
                         ),
                         validator: (v) => (v == null || v.trim().length < 2)
-                            ? 'Enter your name'
+                            ? l10n.enterName
                             : null,
                       ),
                       const SizedBox(height: 14),
@@ -125,13 +127,13 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.email],
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.mail_outline),
+                      decoration: InputDecoration(
+                        labelText: l10n.email,
+                        prefixIcon: const Icon(Icons.mail_outline),
                       ),
                       validator: (v) => _emailPattern.hasMatch(v?.trim() ?? '')
                           ? null
-                          : 'Enter a valid email',
+                          : l10n.enterValidEmail,
                     ),
                     const SizedBox(height: 14),
                     TextFormField(
@@ -140,20 +142,34 @@ class _LoginPageState extends State<LoginPage> {
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _submit(),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: l10n.password,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          tooltip: _obscure ? 'Show password' : 'Hide password',
-                          icon: Icon(_obscure
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
+                          tooltip: _obscure
+                              ? l10n.showPassword
+                              : l10n.hidePassword,
+                          icon: Icon(
+                            _obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
                           onPressed: () => setState(() => _obscure = !_obscure),
                         ),
                       ),
                       validator: (v) => (v == null || v.length < 6)
-                          ? 'At least 6 characters'
+                          ? l10n.passwordMin(6)
                           : null,
                     ),
+                    if (error != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        error.message(l10n),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     FilledButton(
                       onPressed: busy ? null : _submit,
@@ -161,13 +177,15 @@ class _LoginPageState extends State<LoginPage> {
                           ? const SizedBox(
                               width: 22,
                               height: 22,
-                              child: CircularProgressIndicator(strokeWidth: 2.5),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
                             )
-                          : Text(_register ? 'Create account' : 'Sign in'),
+                          : Text(_register ? l10n.createAccount : l10n.signIn),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Demo app: no data leaves your device.',
+                      cloud ? l10n.cloudNote : l10n.demoNote,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,

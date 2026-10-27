@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1087470705850",
+    "project_id": "hotel-booking-bekzod",
+    "storage_bucket": "hotel-booking-bekzod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087470705850:android:82c97b2d9032608b75b683",
+        "android_client_info": {
+          "package_name": "dev.bekzod.hotel_booking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO3v2WB7AfY4n7HwelFJsMz5MaHzak_eU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

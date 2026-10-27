@@ -9,11 +9,15 @@ class HotelsState extends Equatable {
     this.all = const [],
     this.filter = const HotelFilter(),
     this.loading = true,
+    this.failed = false,
   });
 
   final List<Hotel> all;
   final HotelFilter filter;
   final bool loading;
+
+  /// Whether the last attempt to load the hotels failed.
+  final bool failed;
 
   List<Hotel> get results => filter.apply(all);
   List<Hotel> get featured => all.where((h) => h.featured).toList();
@@ -31,15 +35,17 @@ class HotelsState extends Equatable {
     List<Hotel>? all,
     HotelFilter? filter,
     bool? loading,
+    bool? failed,
   }) =>
       HotelsState(
         all: all ?? this.all,
         filter: filter ?? this.filter,
         loading: loading ?? this.loading,
+        failed: failed ?? this.failed,
       );
 
   @override
-  List<Object?> get props => [all, filter, loading];
+  List<Object?> get props => [all, filter, loading, failed];
 }
 
 class HotelsCubit extends Cubit<HotelsState> {
@@ -48,9 +54,13 @@ class HotelsCubit extends Cubit<HotelsState> {
   final HotelRepository _repository;
 
   Future<void> load() async {
-    emit(state.copyWith(loading: true));
-    final hotels = await _repository.getHotels();
-    emit(state.copyWith(all: hotels, loading: false));
+    emit(state.copyWith(loading: true, failed: false));
+    try {
+      final hotels = await _repository.getHotels();
+      emit(state.copyWith(all: hotels, loading: false));
+    } catch (_) {
+      emit(state.copyWith(loading: false, failed: true));
+    }
   }
 
   void search(String query) =>

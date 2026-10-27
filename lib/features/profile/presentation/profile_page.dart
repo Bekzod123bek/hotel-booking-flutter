@@ -1,30 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/l10n/locale_cubit.dart';
+
 import '../../../core/theme/theme_cubit.dart';
 import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../hotels/presentation/cubit/bookings_cubit.dart';
 import '../../hotels/presentation/cubit/favorites_cubit.dart';
+import '../../../core/l10n/l10n.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   Future<void> _logout(BuildContext context) async {
     final auth = context.read<AuthCubit>();
+    final l10n = context.l10n;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log out?'),
-        content: const Text('Your favorites and bookings stay on this device.'),
+        title: Text(l10n.logOutQ),
+        content: Text(l10n.logOutBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Log out'),
+            child: Text(l10n.logOut),
           ),
         ],
       ),
@@ -35,15 +39,17 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final user = context.select((AuthCubit c) => c.state.user);
     final bookings = context.watch<BookingsCubit>().state.length;
     final favorites = context.watch<FavoritesCubit>().state.length;
     final themeMode = context.watch<ThemeCubit>().state;
-    final dark = themeMode == ThemeMode.dark ||
+    final dark =
+        themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system && theme.brightness == Brightness.dark);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l10n.navProfile)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
         children: [
@@ -52,10 +58,7 @@ class ProfilePage extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: LinearGradient(
-                colors: [
-                  theme.colorScheme.primary,
-                  theme.colorScheme.tertiary,
-                ],
+                colors: [theme.colorScheme.primary, theme.colorScheme.tertiary],
               ),
             ),
             child: Row(
@@ -65,8 +68,9 @@ class ProfilePage extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Text(
                     user?.initials ?? '?',
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(color: theme.colorScheme.primary),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -75,14 +79,16 @@ class ProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.name ?? 'Guest',
-                        style: theme.textTheme.titleLarge
-                            ?.copyWith(color: Colors.white),
+                        user?.name ?? l10n.guest,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
                       Text(
                         user?.email ?? '',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: Colors.white70),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white70,
+                        ),
                       ),
                     ],
                   ),
@@ -97,7 +103,7 @@ class ProfilePage extends StatelessWidget {
                 child: _Stat(
                   icon: Icons.luggage_outlined,
                   value: '$bookings',
-                  label: 'Bookings',
+                  label: l10n.navBookings,
                 ),
               ),
               const SizedBox(width: 12),
@@ -105,7 +111,7 @@ class ProfilePage extends StatelessWidget {
                 child: _Stat(
                   icon: Icons.favorite_border,
                   value: '$favorites',
-                  label: 'Favorites',
+                  label: l10n.navFavorites,
                 ),
               ),
             ],
@@ -116,26 +122,22 @@ class ProfilePage extends StatelessWidget {
               children: [
                 SwitchListTile(
                   secondary: const Icon(Icons.dark_mode_outlined),
-                  title: const Text('Dark mode'),
+                  title: Text(l10n.darkMode),
                   value: dark,
                   onChanged: context.read<ThemeCubit>().setDark,
                 ),
                 const Divider(height: 1, indent: 16, endIndent: 16),
+                const _LanguageTile(),
+                const Divider(height: 1, indent: 16, endIndent: 16),
                 ListTile(
                   leading: const Icon(Icons.info_outline),
-                  title: const Text('About this app'),
+                  title: Text(l10n.aboutApp),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => showAboutDialog(
                     context: context,
-                    applicationName: 'Hotel Booking',
+                    applicationName: l10n.appTitle,
                     applicationVersion: '1.0.0',
-                    children: const [
-                      Text(
-                        'Demo project built with Flutter, Cubit, get_it and '
-                        'Clean Architecture. Data is sample data and photos '
-                        'are from Unsplash.',
-                      ),
-                    ],
+                    children: [Text(l10n.aboutBody)],
                   ),
                 ),
               ],
@@ -145,9 +147,44 @@ class ProfilePage extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: () => _logout(context),
             icon: const Icon(Icons.logout),
-            label: const Text('Log out'),
+            label: Text(l10n.logOut),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LanguageTile extends StatelessWidget {
+  const _LanguageTile();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final current = Localizations.localeOf(context).languageCode;
+    return ListTile(
+      leading: const Icon(Icons.language),
+      title: Text(l10n.language),
+      trailing: PopupMenuButton<Locale>(
+        initialValue: Locale(current),
+        onSelected: context.read<LocaleCubit>().select,
+        itemBuilder: (_) => [
+          for (final locale in AppLocalizations.supportedLocales)
+            PopupMenuItem(
+              value: locale,
+              child: Text(lookupAppLocalizations(locale).languageName),
+            ),
+        ],
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l10n.languageName),
+              const Icon(Icons.arrow_drop_down),
+            ],
+          ),
+        ),
       ),
     );
   }

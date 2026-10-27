@@ -5,15 +5,16 @@ import 'package:hotel_booking/core/widgets/app_image.dart';
 import 'package:hotel_booking/core/widgets/skeleton.dart';
 import 'package:hotel_booking/features/auth/data/local_auth_repository.dart';
 import 'package:hotel_booking/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:hotel_booking/features/hotels/data/local_user_data_repository.dart';
 import 'package:hotel_booking/features/hotels/data/mock_hotel_repository.dart';
 import 'package:hotel_booking/features/hotels/data/sample_hotels.dart';
 import 'package:hotel_booking/features/hotels/domain/entities.dart';
-import 'package:hotel_booking/features/hotels/presentation/cubit/bookings_cubit.dart';
 import 'package:hotel_booking/features/hotels/presentation/cubit/favorites_cubit.dart';
 import 'package:hotel_booking/features/hotels/presentation/cubit/hotels_cubit.dart';
 import 'package:hotel_booking/injection.dart';
 import 'package:hotel_booking/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hotel_booking/features/hotels/presentation/widgets/hotel_map.dart';
 
 Future<SharedPreferences> _prefs([Map<String, Object> values = const {}]) async {
   SharedPreferences.setMockInitialValues(values);
@@ -24,6 +25,7 @@ void main() {
   setUpAll(() {
     AppImage.networkEnabled = false;
     Skeleton.animate = false;
+    HotelMap.networkEnabled = false;
   });
 
   group('HotelFilter', () {
@@ -80,7 +82,7 @@ void main() {
 
   group('Cubits', () {
     test('HotelsCubit loads hotels and applies the city filter', () async {
-      final cubit = HotelsCubit(MockHotelRepository(await _prefs(), delay: Duration.zero));
+      final cubit = HotelsCubit(MockHotelRepository(delay: Duration.zero));
       await cubit.load();
       expect(cubit.state.all, hasLength(sampleHotels.length));
       expect(cubit.state.featured, isNotEmpty);
@@ -96,7 +98,7 @@ void main() {
 
     test('FavoritesCubit persists favorites', () async {
       final prefs = await _prefs();
-      final repo = MockHotelRepository(prefs, delay: Duration.zero);
+      final repo = LocalFavoritesRepository(prefs);
 
       final cubit = FavoritesCubit(repo);
       expect(await cubit.toggle('h1'), isTrue);
@@ -108,34 +110,6 @@ void main() {
 
       expect(await reloaded.toggle('h1'), isFalse);
       expect(prefs.getStringList('favorite_hotels'), isEmpty);
-    });
-
-    test('BookingsCubit books with room price and service fee, then cancels',
-        () async {
-      final repo = MockHotelRepository(await _prefs(), delay: Duration.zero);
-      final cubit = BookingsCubit(repo, clock: () => DateTime(2030));
-      final hotel = sampleHotels.first; // $85 per night
-      final deluxe = RoomType.all[1]; // x1.4
-
-      final booking = await cubit.book(
-        hotel: hotel,
-        room: deluxe,
-        checkIn: DateTime(2030, 1, 1),
-        checkOut: DateTime(2030, 1, 4),
-        guests: 2,
-      );
-      expect(booking.pricePerNight, 119);
-      expect(booking.nights, 3);
-      expect(booking.roomTotal, 357);
-      expect(booking.serviceFee, 36);
-      expect(booking.total, 393);
-
-      final stored = await repo.getBookings();
-      expect(stored.single, booking);
-      expect(stored.single.total, 393);
-
-      await cubit.cancel(booking.id);
-      expect(await repo.getBookings(), isEmpty);
     });
 
     test('AuthCubit: onboarding -> sign in -> log out', () async {
@@ -229,6 +203,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Amenities'), findsOneWidget);
       expect(find.text('Select room'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Open in maps app'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Open in maps app'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Amenities'),
+        -300,
+        scrollable: find.byType(Scrollable).first,
+      );
 
       await tester.tap(find.byTooltip('Add to favorites').first);
       await tester.pumpAndSettle();

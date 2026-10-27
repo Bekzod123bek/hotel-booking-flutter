@@ -5,18 +5,19 @@ import '../../../../core/widgets/app_image.dart';
 import '../../domain/entities.dart';
 import '../cubit/favorites_cubit.dart';
 import '../pages/hotel_detail_page.dart';
+import '../../../../core/l10n/l10n.dart';
 
 IconData amenityIcon(String amenity) => switch (amenity) {
-      'Wi-Fi' => Icons.wifi,
-      'Breakfast' => Icons.free_breakfast_outlined,
-      'Pool' => Icons.pool,
-      'Spa' => Icons.spa_outlined,
-      'Gym' => Icons.fitness_center,
-      'Parking' => Icons.local_parking,
-      'Restaurant' => Icons.restaurant,
-      'Air conditioning' => Icons.ac_unit,
-      _ => Icons.check_circle_outline,
-    };
+  'Wi-Fi' => Icons.wifi,
+  'Breakfast' => Icons.free_breakfast_outlined,
+  'Pool' => Icons.pool,
+  'Spa' => Icons.spa_outlined,
+  'Gym' => Icons.fitness_center,
+  'Parking' => Icons.local_parking,
+  'Restaurant' => Icons.restaurant,
+  'Air conditioning' => Icons.ac_unit,
+  _ => Icons.check_circle_outline,
+};
 
 void openHotel(BuildContext context, Hotel hotel, String heroTag) {
   Navigator.of(context).push(
@@ -67,25 +68,33 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final favorite =
-        context.select((FavoritesCubit c) => c.state.contains(hotel.id));
+    final favorite = context.select(
+      (FavoritesCubit c) => c.state.contains(hotel.id),
+    );
     return Material(
       color: Colors.white.withValues(alpha: 0.92),
       shape: const CircleBorder(),
       child: IconButton(
-        tooltip: favorite ? 'Remove from favorites' : 'Add to favorites',
+        tooltip: favorite
+            ? context.l10n.removeFromFavorites
+            : context.l10n.addToFavorites,
         iconSize: size,
         onPressed: () async {
           final messenger = ScaffoldMessenger.of(context);
+          final l10n = context.l10n;
           final added = await context.read<FavoritesCubit>().toggle(hotel.id);
           messenger
             ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-              content: Text(added
-                  ? '${hotel.name} added to favorites'
-                  : '${hotel.name} removed from favorites'),
-              duration: const Duration(seconds: 2),
-            ));
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  added
+                      ? l10n.addedToFavorites(hotel.name)
+                      : l10n.removedFromFavorites(hotel.name),
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
         },
         icon: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -151,13 +160,15 @@ class HotelCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.location_on_outlined,
-                                size: 16,
-                                color: theme.colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 16,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 2),
                             Flexible(
                               child: Text(
-                                '${hotel.city}  •  ${hotel.reviewCount} reviews',
+                                '${hotel.city}  •  ${context.l10n.reviewsCount(hotel.reviewCount)}',
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
@@ -198,9 +209,11 @@ class PriceTag extends StatelessWidget {
             style: theme.textTheme.titleLarge?.copyWith(color: color),
           ),
           TextSpan(
-            text: ' /night',
+            text: context.l10n.perNight,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: light ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+              color: light
+                  ? Colors.white70
+                  : theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -211,7 +224,11 @@ class PriceTag extends StatelessWidget {
 
 /// Wide card with a gradient over the photo, used in the featured carousel.
 class FeaturedHotelCard extends StatelessWidget {
-  const FeaturedHotelCard({super.key, required this.hotel, required this.heroTag});
+  const FeaturedHotelCard({
+    super.key,
+    required this.hotel,
+    required this.heroTag,
+  });
 
   final Hotel hotel;
   final String heroTag;
@@ -237,11 +254,7 @@ class FeaturedHotelCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              top: 12,
-              right: 12,
-              child: FavoriteButton(hotel: hotel),
-            ),
+            Positioned(top: 12, right: 12, child: FavoriteButton(hotel: hotel)),
             Positioned(
               left: 18,
               right: 18,
@@ -259,13 +272,15 @@ class FeaturedHotelCard extends StatelessWidget {
                           hotel.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleLarge
-                              ?.copyWith(color: Colors.white),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
                         Text(
                           hotel.city,
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: Colors.white70),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ),
@@ -308,10 +323,12 @@ class HotelTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(hotel.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium),
+                    Text(
+                      hotel.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 2),
                     Text(hotel.city, style: theme.textTheme.bodySmall),
                     const SizedBox(height: 10),

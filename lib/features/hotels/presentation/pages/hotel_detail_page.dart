@@ -5,9 +5,15 @@ import '../../../../core/widgets/app_image.dart';
 import '../../domain/entities.dart';
 import '../widgets/hotel_widgets.dart';
 import 'booking_page.dart';
+import '../../../../core/l10n/l10n.dart';
+import '../widgets/hotel_map.dart';
 
 class HotelDetailPage extends StatefulWidget {
-  const HotelDetailPage({super.key, required this.hotel, required this.heroTag});
+  const HotelDetailPage({
+    super.key,
+    required this.hotel,
+    required this.heroTag,
+  });
 
   final Hotel hotel;
   final String heroTag;
@@ -45,7 +51,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             leading: Padding(
               padding: const EdgeInsets.all(8),
               child: IconButton.filledTonal(
-                tooltip: 'Back',
+                tooltip: context.l10n.back,
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back),
               ),
@@ -77,7 +83,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     bottom: 16,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(12),
@@ -102,7 +110,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                             width: i == _photo ? 20 : 7,
                             height: 7,
                             decoration: BoxDecoration(
-                              color: i == _photo ? Colors.white : Colors.white54,
+                              color: i == _photo
+                                  ? Colors.white
+                                  : Colors.white54,
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -124,9 +134,12 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     Icon(Icons.location_on_outlined, size: 18, color: muted),
                     const SizedBox(width: 4),
                     Expanded(
-                      child: Text(hotel.address,
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: muted)),
+                      child: Text(
+                        hotel.address,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: muted,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -135,13 +148,14 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   children: [
                     RatingBadge(rating: hotel.rating),
                     const SizedBox(width: 8),
-                    Text('${hotel.reviewCount} reviews',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: muted)),
+                    Text(
+                      context.l10n.reviewsCount(hotel.reviewCount),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: muted),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
-                Text('About', style: theme.textTheme.titleLarge),
+                Text(context.l10n.about, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 8),
                 AnimatedSize(
                   duration: const Duration(milliseconds: 200),
@@ -149,8 +163,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   child: Text(
                     hotel.description,
                     maxLines: _expanded ? null : 3,
-                    overflow:
-                        _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                    overflow: _expanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
                     style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
                   ),
                 ),
@@ -159,11 +174,13 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   child: TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () => setState(() => _expanded = !_expanded),
-                    child: Text(_expanded ? 'Show less' : 'Read more'),
+                    child: Text(
+                      _expanded ? context.l10n.showLess : context.l10n.readMore,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text('Amenities', style: theme.textTheme.titleLarge),
+                Text(context.l10n.amenities, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 10,
@@ -173,14 +190,17 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   ],
                 ),
                 const SizedBox(height: 28),
-                Text('Location', style: theme.textTheme.titleLarge),
+                Text(context.l10n.location, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 12),
-                _MapPlaceholder(address: hotel.address),
+                HotelMap(hotel: hotel),
                 const SizedBox(height: 28),
                 Row(
                   children: [
                     Expanded(
-                      child: Text('Reviews', style: theme.textTheme.titleLarge),
+                      child: Text(
+                        context.l10n.reviews,
+                        style: theme.textTheme.titleLarge,
+                      ),
                     ),
                     const Icon(Icons.star_rounded, color: Color(0xFFFFB547)),
                     Text(
@@ -223,92 +243,14 @@ class _Amenity extends StatelessWidget {
         children: [
           Icon(amenityIcon(name), size: 18, color: scheme.primary),
           const SizedBox(width: 8),
-          Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
-  }
-}
-
-/// Stand-in for a real map, which would need a maps SDK and an API key.
-class _MapPlaceholder extends StatelessWidget {
-  const _MapPlaceholder({required this.address});
-
-  final String address;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [scheme.primaryContainer, scheme.tertiaryContainer],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _GridPainter(scheme.onPrimaryContainer.withValues(alpha: 0.08)),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.location_on, size: 44, color: scheme.primary),
-                const SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    address,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-                Text(
-                  'Map preview',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: scheme.onPrimaryContainer.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            amenityLabel(context.l10n, name),
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ],
       ),
     );
   }
-}
-
-class _GridPainter extends CustomPainter {
-  _GridPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1;
-    for (double x = 0; x < size.width; x += 24) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += 24) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_GridPainter old) => old.color != color;
 }
 
 class _ReviewCard extends StatelessWidget {
@@ -339,7 +281,10 @@ class _ReviewCard extends StatelessWidget {
                     children: [
                       Text(review.author, style: theme.textTheme.titleSmall),
                       Text(
-                        DateFormat('d MMM yyyy').format(review.date),
+                        DateFormat(
+                          'd MMM yyyy',
+                          Localizations.localeOf(context).toString(),
+                        ).format(review.date),
                         style: theme.textTheme.bodySmall,
                       ),
                     ],
@@ -386,7 +331,7 @@ class _BookBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('From', style: theme.textTheme.bodySmall),
+                  Text(context.l10n.from, style: theme.textTheme.bodySmall),
                   PriceTag(price: hotel.pricePerNight),
                 ],
               ),
@@ -398,7 +343,7 @@ class _BookBar extends StatelessWidget {
                       builder: (_) => BookingPage(hotel: hotel),
                     ),
                   ),
-                  child: const Text('Select room'),
+                  child: Text(context.l10n.selectRoom),
                 ),
               ),
             ],
