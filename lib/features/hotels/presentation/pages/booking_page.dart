@@ -9,6 +9,7 @@ import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities.dart';
 import '../cubit/bookings_cubit.dart';
 import '../../../../core/layout/breakpoints.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 final _phonePattern = RegExp(r'^\+?[0-9 ()\-]{9,18}$');
 
@@ -130,7 +131,11 @@ class _BookingPageState extends State<BookingPage> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
+        icon: Icon(
+          Icons.check_circle,
+          color: AppColors.of(context).success,
+          size: 48,
+        ),
         title: Text(l10n.bookingConfirmed),
         content: Text(
           '${widget.hotel.name}\n${format.format(range.start)} – '

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import '../theme/app_tokens.dart';
 
 /// Shimmering grey block used while content is loading.
 class Skeleton extends StatelessWidget {
@@ -14,9 +15,9 @@ class Skeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final base = isDark ? const Color(0xFF20282B) : const Color(0xFFE4E9EA);
-    final highlight = isDark ? const Color(0xFF2C3639) : const Color(0xFFF4F7F7);
+    final colors = AppColors.of(context);
+    final base = colors.skeletonBase;
+    final highlight = colors.skeletonHighlight;
     final box = Container(
       width: width,
       height: height,

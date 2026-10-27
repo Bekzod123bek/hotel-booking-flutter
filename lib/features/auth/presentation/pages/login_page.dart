@@ -6,6 +6,7 @@ import '../../../../core/widgets/gradient_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/layout/breakpoints.dart';
+import '../../../../core/widgets/app_logo.dart';
 
 final _emailPattern = RegExp(r'^[\w.+\-]+@[\w\-]+\.[\w.\-]{2,}$');
 
@@ -89,6 +90,11 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: AppLogo(size: 56, label: l10n.appTitle),
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       _register ? l10n.createAccount : l10n.welcomeBack,
                       style: theme.textTheme.headlineMedium,

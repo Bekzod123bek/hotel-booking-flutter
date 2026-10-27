@@ -8,6 +8,7 @@ import '../../domain/entities.dart';
 import '../cubit/bookings_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/layout/breakpoints.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 class BookingsPage extends StatelessWidget {
   const BookingsPage({super.key});
@@ -105,13 +106,9 @@ class _BookingCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 AppImage(booking.image),
-                const DecoratedBox(
+                DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black54],
-                    ),
+                    gradient: AppColors.of(context).photoScrim,
                   ),
                 ),
                 Positioned(
@@ -120,8 +117,9 @@ class _BookingCard extends StatelessWidget {
                   right: 16,
                   child: Text(
                     booking.hotelName,
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(color: Colors.white),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: AppColors.of(context).onBrand,
+                    ),
                   ),
                 ),
                 Positioned(

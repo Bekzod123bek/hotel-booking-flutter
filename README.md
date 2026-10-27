@@ -19,7 +19,22 @@ Flutter.
 
 Screenshots were taken on an Android emulator (Pixel 7).
 
+## Brand
+
+The mark is a location pin with a hotel facade inside it, drawn in the brand
+gradient. `assets/brand/logo.svg` is the source; the PNGs beside it are
+generated, and launcher icons come from them:
+
+```bash
+dart run flutter_launcher_icons
+```
+
 ## Design
+
+Colours, radii, spacing, motion and shadows live as tokens in
+`lib/core/theme/app_tokens.dart` (primitive → semantic → scales); the theme is
+built from them and widgets never hard-code a colour. A test checks that body
+text clears 4.5:1 contrast in both themes.
 
 A light "luxury travel" look: a soft sky gradient behind white cards, a
 cyan-to-blue gradient on the main buttons, amber for what the guest picks,

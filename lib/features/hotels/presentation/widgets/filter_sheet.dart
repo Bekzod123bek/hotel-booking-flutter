@@ -5,6 +5,7 @@ import '../../domain/entities.dart';
 import 'hotel_widgets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/layout/breakpoints.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 /// Opens the filter sheet and returns the new filter, or `null` if dismissed.
 Future<HotelFilter?> showFilterSheet(
@@ -109,10 +110,10 @@ class _FilterSheetState extends State<_FilterSheet> {
                       ChoiceChip(
                         avatar: r == 0
                             ? null
-                            : const Icon(
+                            : Icon(
                                 Icons.star_rounded,
                                 size: 18,
-                                color: Color(0xFFFFB547),
+                                color: AppColors.of(context).accent,
                               ),
                         label: Text(
                           r == 0 ? l10n.any : '${r.toStringAsFixed(1)}+',

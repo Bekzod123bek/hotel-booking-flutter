@@ -9,6 +9,7 @@ import '../../hotels/presentation/cubit/bookings_cubit.dart';
 import '../../hotels/presentation/cubit/favorites_cubit.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/layout/breakpoints.dart';
+import '../../../core/widgets/app_logo.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -148,6 +149,7 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       applicationName: l10n.appTitle,
                       applicationVersion: '1.0.0',
+                      applicationIcon: const AppLogo(size: 44),
                       children: [Text(l10n.aboutBody)],
                     ),
                   ),

@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_tokens.dart';
+
 /// One entry of [GlassNavBar] / [GlassNavRail].
 class GlassNavItem {
   const GlassNavItem({
@@ -32,9 +34,13 @@ class GlassNavBar extends StatelessWidget {
   /// Height of the pill itself, without the margin around it.
   static const barHeight = 66.0;
 
-  /// Space a page should leave at the bottom so its last row is not covered.
+  /// Margin between the pill and the window edges.
+  static const _margin = 12.0;
+
+  /// How much room the bar takes from the bottom of a page. Pages add this to
+  /// their own padding, then a gap of their choosing on top.
   static double spaceFor(BuildContext context) =>
-      barHeight + 24 + MediaQuery.paddingOf(context).bottom;
+      barHeight + _margin + MediaQuery.paddingOf(context).bottom;
 
   final List<GlassNavItem> items;
   final int selectedIndex;
@@ -45,7 +51,7 @@ class GlassNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, _margin),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
@@ -137,19 +143,11 @@ class _GlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final scheme = theme.colorScheme;
+    final colors = AppColors.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.14),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        boxShadow: Shadows.lift(colors),
       ),
       child: ClipRRect(
         borderRadius: borderRadius,
@@ -159,13 +157,8 @@ class _GlassSurface extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: borderRadius,
               // Tinted rather than opaque, so the page shows through.
-              color: scheme.surface.withValues(alpha: isDark ? 0.55 : 0.62),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.14)
-                    : Colors.white.withValues(alpha: 0.75),
-                width: 1,
-              ),
+              color: colors.glassTint,
+              border: Border.all(color: colors.glassBorder, width: 1),
             ),
             child: child,
           ),
@@ -205,7 +198,7 @@ class _GlassNavButton extends StatelessWidget {
         onTap: onTap,
         customBorder: const StadiumBorder(),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
+          duration: Motion.normal,
           curve: Curves.easeOut,
           margin: const EdgeInsets.all(6),
           decoration: BoxDecoration(

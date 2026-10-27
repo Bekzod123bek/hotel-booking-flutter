@@ -7,7 +7,7 @@ import '../cubit/favorites_cubit.dart';
 import '../cubit/hotels_cubit.dart';
 import '../pages/hotel_detail_page.dart';
 import '../../../../core/l10n/l10n.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 IconData amenityIcon(String amenity) => switch (amenity) {
   'Wi-Fi' => Icons.wifi,
@@ -45,24 +45,25 @@ class RatingBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final colors = AppColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: onImage
-            ? Colors.black45
-            : AppTheme.accent.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
+            ? colors.scrim.withValues(alpha: 0.45)
+            : colors.accent.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(Radii.pill),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.star_rounded, size: 16, color: AppTheme.accent),
+          Icon(Icons.star_rounded, size: 16, color: colors.accent),
           const SizedBox(width: 3),
           Text(
             rating.toStringAsFixed(1),
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              color: onImage ? Colors.white : scheme.onSurface,
+              color: onImage ? colors.onBrand : scheme.onSurface,
             ),
           ),
         ],
@@ -108,13 +109,15 @@ class FavoriteButton extends StatelessWidget {
             );
         },
         icon: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: Motion.quick,
           transitionBuilder: (child, anim) =>
               ScaleTransition(scale: anim, child: child),
           child: Icon(
             favorite ? Icons.favorite : Icons.favorite_border,
             key: ValueKey(favorite),
-            color: favorite ? const Color(0xFFE5484D) : Colors.black87,
+            color: favorite
+                ? AppColors.of(context).danger
+                : AppColors.of(context).ink,
           ),
         ),
       ),

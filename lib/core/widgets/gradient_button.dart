@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_theme.dart';
+import '../theme/app_tokens.dart';
 
 /// The main call to action: a pill with the brand gradient.
 ///
@@ -25,6 +25,7 @@ class GradientButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final colors = AppColors.of(context);
     final enabled = onPressed != null;
     return Semantics(
       button: true,
@@ -32,17 +33,9 @@ class GradientButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(height / 2),
-          gradient: enabled ? (gradient ?? AppTheme.primaryGradient) : null,
+          gradient: enabled ? (gradient ?? colors.brandGradient) : null,
           color: enabled ? null : scheme.onSurface.withValues(alpha: 0.12),
-          boxShadow: enabled
-              ? [
-                  BoxShadow(
-                    color: AppTheme.primaryEnd.withValues(alpha: 0.28),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
+          boxShadow: enabled ? Shadows.brand(colors) : null,
         ),
         child: Material(
           color: Colors.transparent,
@@ -58,13 +51,13 @@ class GradientButton extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: enabled
-                      ? Colors.white
+                      ? colors.onBrand
                       : scheme.onSurface.withValues(alpha: 0.38),
                 ),
                 child: IconTheme.merge(
                   data: IconThemeData(
                     color: enabled
-                        ? Colors.white
+                        ? colors.onBrand
                         : scheme.onSurface.withValues(alpha: 0.38),
                   ),
                   child: child,

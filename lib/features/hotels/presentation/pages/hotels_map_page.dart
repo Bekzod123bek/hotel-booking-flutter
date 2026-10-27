@@ -7,6 +7,7 @@ import '../../../../core/l10n/l10n.dart';
 import '../../domain/entities.dart';
 import '../cubit/hotels_cubit.dart';
 import '../widgets/hotel_widgets.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 /// All hotels on one map. Tapping a marker opens its card at the bottom.
 class HotelsMapPage extends StatefulWidget {
@@ -167,7 +168,7 @@ class _PriceMarker extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: Motion.quick,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: selected ? scheme.primary : scheme.surface,
@@ -175,9 +176,7 @@ class _PriceMarker extends StatelessWidget {
                 border: Border.all(
                   color: selected ? scheme.primary : scheme.outlineVariant,
                 ),
-                boxShadow: const [
-                  BoxShadow(blurRadius: 6, color: Colors.black26),
-                ],
+                boxShadow: Shadows.lift(AppColors.of(context)),
               ),
               child: Text(
                 '\$${hotel.pricePerNight}',
@@ -210,7 +209,7 @@ class _UserDot extends StatelessWidget {
         shape: BoxShape.circle,
         color: scheme.primary,
         border: Border.all(color: scheme.onPrimary, width: 3),
-        boxShadow: const [BoxShadow(blurRadius: 6, color: Colors.black38)],
+        boxShadow: Shadows.lift(AppColors.of(context)),
       ),
     );
   }

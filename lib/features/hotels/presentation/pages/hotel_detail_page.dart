@@ -10,6 +10,7 @@ import 'booking_page.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../widgets/hotel_map.dart';
 import '../../../../core/layout/breakpoints.dart';
+import '../../../../core/theme/app_tokens.dart';
 
 class HotelDetailPage extends StatefulWidget {
   const HotelDetailPage({
@@ -229,7 +230,10 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         style: theme.textTheme.titleLarge,
                       ),
                     ),
-                    const Icon(Icons.star_rounded, color: Color(0xFFFFB547)),
+                    Icon(
+                      Icons.star_rounded,
+                      color: AppColors.of(context).accent,
+                    ),
                     Text(
                       ' ${hotel.rating.toStringAsFixed(1)}',
                       style: theme.textTheme.titleMedium,

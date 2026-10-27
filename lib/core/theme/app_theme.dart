@@ -1,61 +1,29 @@
 import 'package:flutter/material.dart';
 
-/// Light, airy travel look: a soft sky gradient behind translucent white
-/// cards, round shapes, a cyan-to-blue primary and an amber accent for the
-/// things the guest picks (dates, number of guests).
+import 'app_tokens.dart';
+
 class AppTheme {
   const AppTheme._();
 
-  /// Start and end of the primary gradient, used on the main call to action.
-  static const primaryStart = Color(0xFF3ECFF5);
-  static const primaryEnd = Color(0xFF2B7FEA);
+  static ThemeData light() => _build(AppColors.light);
+  static ThemeData dark() => _build(AppColors.dark);
 
-  /// Selected dates, the plus buttons and the rating star.
-  static const accent = Color(0xFFF7A325);
-
-  static const _lightInk = Color(0xFF0E2638);
-
-  static const primaryGradient = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [primaryStart, primaryEnd],
-  );
-
-  /// Page background: a pale sky that fades into the surface colour.
-  static LinearGradient backgroundGradient(Brightness brightness) =>
-      brightness == Brightness.dark
-      ? const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF0C1C28), Color(0xFF0A141C)],
-        )
-      : const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFE4F4FE), Color(0xFFF4FAFE)],
-        );
-
-  static ThemeData light() => _build(Brightness.light);
-  static ThemeData dark() => _build(Brightness.dark);
-
-  static ThemeData _build(Brightness brightness) {
+  static ThemeData _build(AppColors colors) {
+    final brightness = colors.brightness;
     final isDark = brightness == Brightness.dark;
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: primaryEnd,
+          seedColor: colors.primaryEnd,
           brightness: brightness,
         ).copyWith(
-          primary: isDark ? primaryStart : primaryEnd,
-          secondary: accent,
-          tertiary: accent,
-          surface: isDark ? const Color(0xFF0A141C) : const Color(0xFFF4FAFE),
-          onSurface: isDark ? const Color(0xFFE8F2F8) : _lightInk,
-          onSurfaceVariant: isDark
-              ? const Color(0xFF9FB3C0)
-              : const Color(0xFF5B7383),
-          outlineVariant: isDark
-              ? const Color(0xFF203240)
-              : const Color(0xFFD9E8F2),
+          primary: colors.primary,
+          secondary: colors.accent,
+          tertiary: colors.accent,
+          error: colors.danger,
+          surface: colors.surface,
+          onSurface: colors.ink,
+          onSurfaceVariant: colors.inkMuted,
+          outlineVariant: colors.hairline,
         );
     final base = ThemeData(
       useMaterial3: true,
@@ -63,7 +31,7 @@ class AppTheme {
       brightness: brightness,
     );
     final text = base.textTheme;
-    final card = isDark ? const Color(0xFF16222D) : Colors.white;
+    final card = colors.card;
 
     return base.copyWith(
       // The gradient is painted once for the whole app in [AppBackground].
@@ -104,11 +72,13 @@ class AppTheme {
         color: card,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withValues(alpha: 0.06),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.lg)),
       ),
       chipTheme: base.chipTheme.copyWith(
         backgroundColor: card,
-        selectedColor: isDark ? primaryStart.withValues(alpha: 0.22) : null,
+        selectedColor: isDark
+            ? colors.primary.withValues(alpha: 0.22)
+            : null,
         side: BorderSide(color: scheme.outlineVariant),
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -122,15 +92,15 @@ class AppTheme {
           vertical: 18,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(Radii.md),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(Radii.md),
           borderSide: BorderSide(color: scheme.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(Radii.md),
           borderSide: BorderSide(color: scheme.primary, width: 1.6),
         ),
         labelStyle: TextStyle(color: scheme.onSurfaceVariant),
@@ -182,22 +152,22 @@ class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         showDragHandle: true,
-        backgroundColor: isDark ? const Color(0xFF101C26) : Colors.white,
+        backgroundColor: colors.sheet,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.xl)),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.lg + 4)),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         // Clears the floating navigation bar and the booking bar.
         insetPadding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
       ),
-      dividerTheme: DividerThemeData(color: scheme.outlineVariant, space: 1),
+      dividerTheme: DividerThemeData(color: colors.hairline, space: 1),
     );
   }
 }
@@ -212,7 +182,7 @@ class AppBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: AppTheme.backgroundGradient(Theme.of(context).brightness),
+        gradient: AppColors.of(context).backgroundGradient,
       ),
       child: child,
     );
