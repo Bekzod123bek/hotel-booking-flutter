@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hotel_booking/core/theme/theme_cubit.dart';
+import 'package:hotel_booking/core/widgets/gradient_button.dart';
 import 'package:hotel_booking/core/widgets/app_image.dart';
 import 'package:hotel_booking/core/widgets/skeleton.dart';
 import 'package:hotel_booking/features/auth/data/local_auth_repository.dart';
@@ -177,7 +178,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Empty form shows validation errors.
-      await tester.tap(find.widgetWithText(FilledButton, 'Create account'));
+      await tester.tap(find.widgetWithText(GradientButton, 'Create account'));
       await tester.pumpAndSettle();
       expect(find.text('Enter a valid email'), findsOneWidget);
 
@@ -187,7 +188,7 @@ void main() {
           find.widgetWithText(TextFormField, 'Email'), 'bekzod@example.com');
       await tester.enterText(
           find.widgetWithText(TextFormField, 'Password'), 'secret1');
-      await tester.tap(find.widgetWithText(FilledButton, 'Create account'));
+      await tester.tap(find.widgetWithText(GradientButton, 'Create account'));
       await tester.pumpAndSettle();
 
       expect(find.text('Hello, Bekzod 👋'), findsOneWidget);
@@ -217,7 +218,7 @@ void main() {
       await tester.tap(find.text('Khiva Fortress Lodge'));
       await tester.pumpAndSettle();
       expect(find.text('Amenities'), findsOneWidget);
-      expect(find.text('Select room'), findsOneWidget);
+      expect(find.text('Book now'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Open in maps app'),
         300,

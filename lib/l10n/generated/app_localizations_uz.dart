@@ -360,6 +360,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get from => 'Narxi';
 
   @override
+  String get share => 'Ulashish';
+
+  @override
+  String get bookNow => 'Bron qilish';
+
+  @override
+  String get copied => 'Mehmonxona ma\'lumoti nusxalandi';
+
+  @override
   String get selectRoom => 'Xonani tanlash';
 
   @override

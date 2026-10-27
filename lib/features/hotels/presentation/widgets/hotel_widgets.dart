@@ -7,6 +7,7 @@ import '../cubit/favorites_cubit.dart';
 import '../cubit/hotels_cubit.dart';
 import '../pages/hotel_detail_page.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/theme/app_theme.dart';
 
 IconData amenityIcon(String amenity) => switch (amenity) {
   'Wi-Fi' => Icons.wifi,
@@ -47,19 +48,21 @@ class RatingBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: onImage ? Colors.black45 : scheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(10),
+        color: onImage
+            ? Colors.black45
+            : AppTheme.accent.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFB547)),
+          const Icon(Icons.star_rounded, size: 16, color: AppTheme.accent),
           const SizedBox(width: 3),
           Text(
             rating.toStringAsFixed(1),
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              color: onImage ? Colors.white : scheme.onSecondaryContainer,
+              color: onImage ? Colors.white : scheme.onSurface,
             ),
           ),
         ],
@@ -137,7 +140,7 @@ class HotelCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 190,
+              height: 200,
               child: Stack(
                 fit: StackFit.expand,
                 children: [

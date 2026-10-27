@@ -356,6 +356,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get from => 'From';
 
   @override
+  String get share => 'Share';
+
+  @override
+  String get bookNow => 'Book now';
+
+  @override
+  String get copied => 'Hotel details copied';
+
+  @override
   String get selectRoom => 'Select room';
 
   @override

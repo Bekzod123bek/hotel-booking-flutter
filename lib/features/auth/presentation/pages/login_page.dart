@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/app_image.dart';
+import '../../../../core/widgets/gradient_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
 
@@ -171,13 +172,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                     const SizedBox(height: 24),
-                    FilledButton(
+                    GradientButton(
                       onPressed: busy ? null : _submit,
                       child: busy
                           ? const SizedBox(
                               width: 22,
                               height: 22,
                               child: CircularProgressIndicator(
+                                color: Colors.white,
                                 strokeWidth: 2.5,
                               ),
                             )

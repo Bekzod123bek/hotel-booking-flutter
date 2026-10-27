@@ -360,6 +360,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get from => 'От';
 
   @override
+  String get share => 'Поделиться';
+
+  @override
+  String get bookNow => 'Забронировать';
+
+  @override
+  String get copied => 'Данные отеля скопированы';
+
+  @override
   String get selectRoom => 'Выбрать номер';
 
   @override

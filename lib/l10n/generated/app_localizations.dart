@@ -718,6 +718,24 @@ abstract class AppLocalizations {
   /// **'From'**
   String get from;
 
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @bookNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Book now'**
+  String get bookNow;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel details copied'**
+  String get copied;
+
   /// No description provided for @selectRoom.
   ///
   /// In en, this message translates to:

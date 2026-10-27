@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/widgets/app_image.dart';
+import '../../../../core/widgets/gradient_button.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities.dart';
 import '../cubit/bookings_cubit.dart';
@@ -368,7 +369,7 @@ class _BookingPageState extends State<BookingPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: FilledButton(
+          child: GradientButton(
             onPressed: _nights > 0 && !_saving ? _confirm : null,
             child: _saving
                 ? Row(

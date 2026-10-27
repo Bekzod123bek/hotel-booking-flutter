@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/app_image.dart';
+import '../../../../core/widgets/gradient_button.dart';
 import '../../domain/entities.dart';
 import '../widgets/hotel_widgets.dart';
 import 'booking_page.dart';
@@ -49,22 +51,26 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             stretch: true,
             backgroundColor: theme.scaffoldBackgroundColor,
             leading: Padding(
-              padding: const EdgeInsets.all(8),
-              child: IconButton.filledTonal(
+              padding: const EdgeInsets.all(10),
+              child: GlassIconButton(
+                icon: Icons.arrow_back,
                 tooltip: context.l10n.back,
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back),
               ),
             ),
             actions: [
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 10),
                 child: FavoriteButton(hotel: hotel),
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: const [StretchMode.zoomBackground],
-              background: Stack(
+              background: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(32),
+                ),
+                child: Stack(
                 fit: StackFit.expand,
                 children: [
                   PageView.builder(
@@ -121,14 +127,42 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                   ),
                 ],
               ),
+              ),
             ),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
             sliver: SliverList.list(
               children: [
-                Text(hotel.name, style: theme.textTheme.headlineSmall),
-                const SizedBox(height: 6),
+                if (hotel.images.length > 1) ...[
+                  _Thumbnails(
+                    images: hotel.images,
+                    current: _photo,
+                    onPick: (i) {
+                      setState(() => _photo = i);
+                      _gallery.animateToPage(
+                        i,
+                        duration: const Duration(milliseconds: 280),
+                        curve: Curves.easeOut,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        hotel.name,
+                        style: theme.textTheme.headlineSmall,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    PriceTag(price: hotel.pricePerNight),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Icon(Icons.location_on_outlined, size: 18, color: muted),
@@ -141,19 +175,19 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
+                    const SizedBox(width: 10),
                     RatingBadge(rating: hotel.rating),
-                    const SizedBox(width: 8),
-                    Text(
-                      context.l10n.reviewsCount(hotel.reviewCount),
-                      style: theme.textTheme.bodyMedium?.copyWith(color: muted),
-                    ),
                   ],
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  context.l10n.reviewsCount(hotel.reviewCount),
+                  style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                ),
+                const SizedBox(height: 22),
+                Text(context.l10n.amenities, style: theme.textTheme.titleLarge),
+                const SizedBox(height: 12),
+                _AmenityRow(amenities: hotel.amenities),
                 const SizedBox(height: 24),
                 Text(context.l10n.about, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 8),
@@ -179,17 +213,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(context.l10n.amenities, style: theme.textTheme.titleLarge),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    for (final a in hotel.amenities) _Amenity(name: a),
-                  ],
-                ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 Text(context.l10n.location, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 12),
                 HotelMap(hotel: hotel),
@@ -224,28 +248,107 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 }
 
-class _Amenity extends StatelessWidget {
-  const _Amenity({required this.name});
+/// Small previews under the photo; tapping one jumps the gallery to it.
+class _Thumbnails extends StatelessWidget {
+  const _Thumbnails({
+    required this.images,
+    required this.current,
+    required this.onPick,
+  });
+
+  final List<String> images;
+  final int current;
+  final ValueChanged<int> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      height: 64,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (_, i) {
+          final selected = i == current;
+          return Semantics(
+            button: true,
+            selected: selected,
+            label: '${i + 1}/${images.length}',
+            child: GestureDetector(
+              onTap: () => onPick(i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 76,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: selected ? scheme.primary : Colors.transparent,
+                    width: 2.5,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(13),
+                  child: AppImage(images[i]),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Amenities as icon tiles, scrolling sideways when they do not fit.
+class _AmenityRow extends StatelessWidget {
+  const _AmenityRow({required this.amenities});
+
+  final List<String> amenities;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 96,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: amenities.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (_, i) => _AmenityTile(name: amenities[i]),
+      ),
+    );
+  }
+}
+
+class _AmenityTile extends StatelessWidget {
+  const _AmenityTile({required this.name});
 
   final String name;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      width: 92,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
-        color: scheme.primaryContainer.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(14),
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: scheme.outlineVariant),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(amenityIcon(name), size: 18, color: scheme.primary),
-          const SizedBox(width: 8),
+          Icon(amenityIcon(name), size: 22, color: scheme.primary),
+          const SizedBox(height: 8),
           Text(
             amenityLabel(context.l10n, name),
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -307,43 +410,59 @@ class _BookBar extends StatelessWidget {
 
   final Hotel hotel;
 
+  Future<void> _share(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final message = context.l10n.copied;
+    await Clipboard.setData(
+      ClipboardData(text: '${hotel.name}\n${hotel.address}'),
+    );
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Container(
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
           ),
         ],
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Row(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(context.l10n.from, style: theme.textTheme.bodySmall),
-                  PriceTag(price: hotel.pricePerNight),
-                ],
-              ),
-              const SizedBox(width: 20),
               Expanded(
-                child: FilledButton(
+                child: OutlinedButton(
+                  onPressed: () => _share(context),
+                  child: Text(
+                    l10n.share,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: GradientButton(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => BookingPage(hotel: hotel),
                     ),
                   ),
-                  child: Text(context.l10n.selectRoom),
+                  child: Text(l10n.bookNow),
                 ),
               ),
             ],

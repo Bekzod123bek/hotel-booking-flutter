@@ -121,6 +121,9 @@
   "openInMaps": "Open in maps app",
   "mapUnavailable": "Could not open the maps app.",
   "from": "From",
+  "share": "Share",
+  "bookNow": "Book now",
+  "copied": "Hotel details copied",
   "selectRoom": "Select room",
 
   "bookYourStay": "Book your stay",

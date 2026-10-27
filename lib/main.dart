@@ -83,6 +83,8 @@ class HotelBookingApp extends StatelessWidget {
                 GlobalCupertinoLocalizations.delegate,
               ],
               localeResolutionCallback: LocaleCubit.resolve,
+            builder: (context, child) =>
+                AppBackground(child: child ?? const SizedBox.shrink()),
               theme: AppTheme.light(),
               darkTheme: AppTheme.dark(),
               themeMode: mode,

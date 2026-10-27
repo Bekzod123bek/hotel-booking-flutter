@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/app_image.dart';
+import '../../../../core/widgets/gradient_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../../../../core/l10n/l10n.dart';
 
@@ -124,7 +125,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       const Spacer(),
                       SizedBox(
                         width: 150,
-                        child: FilledButton(
+                        child: GradientButton(
                           onPressed: _next,
                           child: Text(_last ? l10n.getStarted : l10n.next),
                         ),

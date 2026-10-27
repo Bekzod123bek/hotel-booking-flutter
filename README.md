@@ -21,7 +21,11 @@ Screenshots were taken on an Android emulator (Pixel 7).
 
 ## Design
 
-Light, calm teal theme (with a dark mode switch), large photo cards with gradients, rounded Material 3 components and Hero transitions between the list and the hotel page.
+A light "luxury travel" look: a soft sky gradient behind white cards, a
+cyan-to-blue gradient on the main buttons, amber for what the guest picks,
+generous rounded corners, a photo header with a thumbnail strip, amenity tiles
+and Hero transitions between the list and the hotel page. A dark variant of the
+same language is one switch away.
 
 ## Features
 
